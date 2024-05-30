@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -21,6 +21,14 @@ import CategoryCarousel from './components/CategoryCarousel/CategoryCarousel';
 import CartPage from './Pages/CartPage/CartPage';
 
 function App() {
+  const [data, setData] = useState(null);
+
+  useEffect(() => {
+    fetch('https://project-e-shop-mcdrmfha9-exyl22s-projects.vercel.app')
+      .then(response => response.json())
+      .then(data => setData(data));
+  }, []);
+
   return (
     <Router>
       <Routes>
@@ -39,6 +47,10 @@ function App() {
         <Route path="/support" element={<SupportPage />} />
       </Routes>
       <ScrollToTopButton/>
+      <div>
+        <h1>Client Project</h1>
+        {data ? <p>{data.message}</p> : <p>Loading...</p>}
+      </div>
     </Router>
   );
 }
