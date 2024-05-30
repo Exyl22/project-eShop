@@ -1,0 +1,130 @@
+/* ProductsCarousel.css */
+.products-carousel {
+    font-family: Arial, sans-serif;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.tabs-prod {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.tabs-prod button {
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin: 10px;
+    color: #333;
+    border-radius: 30px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.tabs-prod button:hover {
+    background-color: #2740cf;
+    color: #fff;
+}
+
+.tabs-prod button.active {
+    background-color: #0051ff;
+    color: #fff;
+}
+
+.product-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.product-item {
+    position: relative;
+    border-radius: 5px;
+    background-color: #222;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.product-item:hover {
+    transform: translateY(-5px);
+}
+
+.product-item img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 5px;
+}
+
+.product-item h3 {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #fff;
+}
+
+.product-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.price {
+    font-size: 16px;
+    color: #ccc;
+}
+
+.like-button {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    background-color: #408ee7;
+    border: none;
+    width: 40px;
+    height: 40px;
+    font-size: 20px;
+    color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.like-button:hover {
+    background-color: #c54c2e;
+}
+
+.like-button.favorite {
+    background-color: #c54c2e;
+}
+
+.like-button.favorite:hover {
+    background-color: #408ee7;
+}
+
+.load-more-button {
+    display: block;
+    width: fit-content; 
+    margin: 20px auto; 
+    padding: 8px 16px;
+    border: none;
+    background-color: #0051ff;
+    color: #fff;
+    font-size: 14px; 
+    font-weight: bold;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.load-more-button:hover {
+    background-color: #2135a8;
+}

@@ -1,0 +1,83 @@
+/* Footer.css */
+.footer {
+  position: relative;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #000;
+  color: white;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: row; 
+  justify-content: space-between; 
+  align-items: center; 
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.footer .logo {
+  font-size: 24px;
+  margin: 20px;
+}
+
+.logo-soc, .menu-policy-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer .social-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.footer .social-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: end;
+}
+
+.footer .social-button i {
+  font-size: 20px;
+  color: #333;
+}
+.menu{
+  margin-right: 0;
+}
+.menu-policy-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center; 
+  align-items: end; 
+  flex-grow: 1; 
+}
+
+.menu, .policy {
+  display: flex;
+  justify-content: end;
+  align-items: end;
+  gap: 20px;
+  padding: 10px 0; 
+}
+
+.menu a, .policy a {
+  text-decoration: none;
+  color: white;
+  transition: color 0.3s ease;
+}
+
+.menu a:hover, .policy a:hover {
+  color: #ccc;
+}
+
+.footer .logo-soc .copyright {
+  margin-top: 10px;
+  font-size: 14px;
+}

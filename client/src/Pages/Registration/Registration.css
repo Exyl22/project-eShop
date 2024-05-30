@@ -1,0 +1,102 @@
+/* Добавьте этот CSS в ваш файл стилей, например, RegisterPage.css */
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    max-width: 600px;
+    background: #111;
+    padding-bottom: 30px;
+    border-radius: 20px;
+  }
+  
+  .text {
+    color: #1280e7a9;
+    font-size: 48px;
+    font-weight: 700;
+    align-self: flex-start;
+    margin-left: auto; 
+    margin-right: auto;  
+  }
+  
+  .underline {
+    width: 60px;
+    height: 6px;
+    background: #1280e7a9;
+    border-radius: 9px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    align-self: flex-start;
+    margin-left: auto; 
+    margin-right: auto; 
+  }
+  
+  .inputs {
+    margin-top: 55px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 25px;
+  }
+  
+  .input {
+    display: flex;
+    align-items: center;
+    width: 480px;
+    height: 80px;
+    background: #333;
+    border-radius: 6px;
+  }
+  .input.error {
+    border: 2px solid #ff4d4d;
+}
+
+  .input img {
+    width: 30px; 
+    height: 30px; 
+    margin: 0 20px; 
+  }
+  
+  .input input {
+    flex: 1;
+    height: 50px;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: #fff;
+    font-size: 19px;
+  }
+  
+  .error-message {
+    margin-top: 10px;
+    color: #ff4d4d;
+    font-size: 16px;
+  }
+  
+  .submit-container {
+    display: flex;
+    gap: 30px;
+    padding: 50px;
+  }
+  
+  .submit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 220px;
+    height: 59px;
+    color: #fff;
+    background: #1280e7a9;
+    border-radius: 10px;
+    font-size: 19px;
+    font-weight: 700;
+    cursor: pointer;
+    border-color: #fff;
+  }
+  
+  .submit.active{
+    background: #1280e7a9;
+    color: #fff;
+  }

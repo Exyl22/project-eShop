@@ -1,0 +1,18 @@
+.agreement-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .agreement-text {
+    margin-top: 20px;
+  }
+  
+  .agreement-text h3 {
+    margin-top: 20px;
+  }
+  
+  .agreement-text p {
+    margin-bottom: 10px;
+  }
+  

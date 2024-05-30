@@ -1,0 +1,68 @@
+/* SupportPage.css */
+.support-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.faq {
+  margin-top: 20px;
+}
+
+.faq h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #fff; /* Белый цвет текста */
+}
+
+.faq-item {
+  margin-bottom: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.question {
+  padding: 10px;
+  background-color: #111; /* Темно-серый фон */
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  color: #fff; /* Белый цвет текста */
+  transition: background-color 0.3s;
+}
+
+.question:hover {
+  background-color: #444; /* Чуть светлее при наведении */
+}
+
+.answer {
+  max-height: 0;
+  opacity: 0;
+  padding: 0 10px;
+  background-color: #111; /* Темно-серый фон */
+  color: #fff; /* Белый цвет текста */
+  overflow: hidden;
+  transition: max-height 0.6s ease, opacity 0.6s ease, padding 0.6s ease;
+}
+
+.active + .answer {
+  max-height: 500px; /* Достаточно большое значение для всех ответов */
+  opacity: 1;
+  padding: 10px;
+}
+
+.question::after {
+  content: '+';
+  font-size: 20px;
+  transition: transform 0.3s;
+  color: #fff; /* Белый цвет текста */
+}
+
+.question.active::after {
+  content: '-';
+  transform: rotate(180deg);
+}

@@ -1,0 +1,104 @@
+.container {
+  position: relative;
+  margin: 20px auto;
+  padding: 0 20px;
+  border-radius: 20px;
+  max-width: 480px; /* Уменьшил максимальную ширину контейнера */
+  height: auto; /* Изменил высоту на авто */
+  overflow: hidden;
+}
+
+.text {
+  color: #1280e7; /* Исправил цвет текста */
+  font-size: 24px; /* Уменьшил размер текста */
+  font-weight: 700;
+  text-align: center; /* Добавил выравнивание по центру */
+  margin-bottom: 20px; /* Добавил отступ снизу */
+}
+
+.underline {
+  width: 60px;
+  height: 6px;
+  background: #1280e7;
+  border-radius: 9px;
+  margin-top: 10px;
+  margin-bottom: 30px; /* Увеличил отступ снизу */
+  align-self: center; /* Центрировал подчеркивание */
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  width: 100%; /* Изменил ширину на 100% */
+  max-width: 480px; /* Добавил максимальную ширину */
+  height: 80px;
+  background: #333;
+  border-radius: 6px;
+}
+
+.input img {
+  width: 30px;
+  height: 30px;
+  margin: 0 20px;
+}
+
+.input input {
+  flex: 1;
+  height: 50px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 19px;
+}
+
+.error-message {
+  color: #ff4d4d;
+  font-size: 16px;
+  text-align: center; /* Выравнивание по центру */
+}
+
+.submit-container {
+  display: flex;
+  justify-content: center; /* Выравнивание по центру */
+  margin-top: 30px; /* Добавил отступ сверху */
+}
+
+.submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 220px;
+  height: 59px;
+  color: #fff;
+  background: #1280e7; /* Исправил цвет кнопки */
+  border-radius: 10px;
+  font-size: 19px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none; /* Убрал границу */
+}
+
+.submit:hover { /* Добавил стили при наведении */
+  background: #0e5aa7;
+}
+
+.register-text {
+  margin-top: 20px;
+  font-size: 16px;
+  color: #888;
+  text-align: center;
+}
+
+.register-link {
+  color: #1280e7a9;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}

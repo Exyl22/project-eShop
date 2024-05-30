@@ -1,0 +1,142 @@
+.header {
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 10px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.logo {
+  font-size: 24px;
+  margin: 0px;
+}
+
+.menuHead {
+  display: flex;
+  margin-right: auto;
+}
+
+.menuHead a {
+  color: white;
+  text-decoration: none;
+  margin-right: 0px;
+  transition: color 0.3s;
+}
+
+.menuHead a:hover {
+  color: #ddd;
+}
+
+.actions {
+  position: relative; /* Добавляем это свойство */
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.actions button {
+  background-color: #222;
+  border: none;
+  cursor: pointer;
+  border-radius: 20px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s;
+}
+
+.actions button:hover {
+  color: #fff;
+}
+
+.actions button i {
+  font-size: 20px;
+}
+
+.actions button img {
+  width: 24px;
+  height: 24px;
+  object-fit: cover; /* Добавляем это свойство для корректного отображения изображения */
+}
+.actions button img {
+  display: block; /* Убираем возможные пустые пространства внутри кнопки */
+  margin: auto; /* Выравниваем изображение по центру кнопки */
+}
+.search-bar {
+  display: flex;
+  align-items: center;
+}
+
+.search-bar input {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.search-bar button {
+  background-color: #177aa1;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.actions button.search-open {
+  border-radius: 5px; /* Закругляем углы кнопки */
+  padding: 8px 16px; /* Изменяем размеры кнопки */
+  background-color: #177aa1; /* Цвет фона */
+  color: white; /* Цвет текста */
+  border: none; /* Удаляем границу */
+  cursor: pointer; /* Устанавливаем курсор указывающий */
+}
+
+.actions button.search-open:hover {
+  background-color: #135e82; /* Изменяем цвет фона при наведении */
+}
+
+.panel-wrapper {
+  position: relative;
+}
+
+.panel {
+  position: absolute;
+  top: 60px; /* Расстояние от кнопки до панели */
+  right: 1;
+  margin: auto;
+  background-color: #222;
+  border: 1px solid #222;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  z-index: 99;
+}
+
+.panel button {
+  display: block;
+  width: 100px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background-color: #e2dada;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.panel button:hover {
+  background-color: #222;
+}
+
+.panel button:last-child {
+  margin-bottom: 0;
+}
