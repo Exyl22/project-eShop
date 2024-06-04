@@ -65,12 +65,12 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-    const { username, password } = req.body; // используем username вместо email
+    const { username, password } = req.body; 
     try {
         const { data: users, error } = await supabase
             .from('users')
             .select('*')
-            .eq('username', username); // проверяем по username
+            .eq('username', username); 
 
         if (error) throw error;
         if (users.length === 0) return res.status(404).json({ error: 'Пользователь не найден' });
@@ -204,7 +204,7 @@ router.get('/categories', async (req, res) => {
 });
 
 router.get('/all-products', async (req, res) => {
-    const { search, sortBy, order } = req.query; // Получаем параметры запроса
+    const { search, sortBy, order } = req.query; 
     try {
         let query = supabase.from('products').select('*');
 
@@ -228,12 +228,11 @@ router.get('/all-products', async (req, res) => {
 });
 
 router.get('/products', async (req, res) => {
-    const { category, search, sortBy, order } = req.query; // Получаем параметры запроса
+    const { category, search, sortBy, order } = req.query;
     try {
         let query = supabase.from('products').select('*');
 
         if (category) {
-            // Получаем идентификатор категории по имени категории
             const { data: categoryData, error: categoryError } = await supabase
                 .from('categories')
                 .select('id')
@@ -243,7 +242,7 @@ router.get('/products', async (req, res) => {
             if (categoryError) throw categoryError;
 
             if (categoryData) {
-                query = query.eq('category_id', categoryData.id); // Используем идентификатор категории в запросе
+                query = query.eq('category_id', categoryData.id); 
             }
         }
 
