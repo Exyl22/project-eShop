@@ -14,7 +14,7 @@ const CartPage = () => {
   }, []);
 
   const fetchCartItems = () => {
-    axios.get('http://localhost:3002/cart', { withCredentials: true })
+    axios.get('http://localhost:3002/api/cart', { withCredentials: true })
       .then(response => {
         setCartItems(response.data);
         calculateTotalPrice(response.data);
@@ -25,47 +25,49 @@ const CartPage = () => {
   };
 
   const calculateTotalPrice = (items) => {
-    const total = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const total = items.reduce((sum, item) => sum + item.products.price * item.quantity, 0);
     setTotalPrice(total);
   };
 
   const handleRemoveItem = (id) => {
-    axios.delete(`http://localhost:3002/cart/${id}`, { withCredentials: true })
-      .then(response => {
-        setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-        calculateTotalPrice(cartItems.filter(item => item.id !== id));
-      })
-      .catch(error => {
-        console.error('Ошибка при удалении товара из корзины:', error);
-      });
-  };
+    axios.delete(`http://localhost:3002/api/cart/${id}`, { withCredentials: true })
+        .then(response => {
+            const updatedItems = cartItems.filter(item => item.id !== id);
+            setCartItems(updatedItems);
+            calculateTotalPrice(updatedItems);
+        })
+        .catch(error => {
+            console.error('Ошибка при удалении товара из корзины:', error);
+        });
+};
 
   const handleIncreaseQuantity = (id) => {
     const item = cartItems.find(item => item.id === id);
-    axios.put(`http://localhost:3002/cart/${id}`, { quantity: item.quantity + 1 }, { withCredentials: true })
-      .then(response => {
-        setCartItems(prevItems => prevItems.map(item => item.id === id ? { ...item, quantity: item.quantity + 1 } : item));
-        calculateTotalPrice(cartItems.map(item => item.id === id ? { ...item, quantity: item.quantity + 1 } : item));
-      })
-      .catch(error => {
-        console.error('Ошибка при увеличении количества товара:', error);
-      });
-  };
-
-  const handleDecreaseQuantity = (id) => {
-    const item = cartItems.find(item => item.id === id);
-    if (item.quantity > 1) {
-      axios.put(`http://localhost:3002/cart/${id}`, { quantity: item.quantity - 1 }, { withCredentials: true })
+    axios.put(`http://localhost:3002/api/cart/${id}`, { quantity: item.quantity + 1 }, { withCredentials: true })
         .then(response => {
-          setCartItems(prevItems => prevItems.map(item => item.id === id ? { ...item, quantity: item.quantity - 1 } : item));
-          calculateTotalPrice(cartItems.map(item => item.id === id ? { ...item, quantity: item.quantity - 1 } : item));
+            const updatedItems = cartItems.map(item => item.id === id ? { ...item, quantity: item.quantity + 1 } : item);
+            setCartItems(updatedItems);
+            calculateTotalPrice(updatedItems);
         })
         .catch(error => {
-          console.error('Ошибка при уменьшении количества товара:', error);
+            console.error('Ошибка при увеличении количества товара:', error);
         });
-    }
-  };
+};
 
+const handleDecreaseQuantity = (id) => {
+  const item = cartItems.find(item => item.id === id);
+  if (item.quantity > 1) {
+      axios.put(`http://localhost:3002/api/cart/${id}`, { quantity: item.quantity - 1 }, { withCredentials: true })
+          .then(response => {
+              const updatedItems = cartItems.map(item => item.id === id ? { ...item, quantity: item.quantity - 1 } : item);
+              setCartItems(updatedItems);
+              calculateTotalPrice(updatedItems);
+          })
+          .catch(error => {
+              console.error('Ошибка при уменьшении количества товара:', error);
+          });
+  }
+};
   return (
     <>
       <Header />
@@ -78,10 +80,10 @@ const CartPage = () => {
             <ul className="cart-items-list">
               {cartItems.map(item => (
                 <li key={item.id} className="cart-item">
-                  <img src={item.image} alt={item.name} className="cart-item-image" />
+                  <img src={item.products.image} alt={item.products.name} className="cart-item-image" />
                   <div className="cart-item-details">
-                    <h2>{item.name}</h2>
-                    <p>Цена: {item.price} руб.</p>
+                    <h2>{item.products.name}</h2>
+                    <p>Цена: {item.products.price} руб.</p>
                     <div className="quantity-controls">
                       <button onClick={() => handleDecreaseQuantity(item.id)}>-</button>
                       <span>{item.quantity}</span>

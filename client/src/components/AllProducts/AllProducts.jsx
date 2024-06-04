@@ -13,7 +13,7 @@ const AllProducts = () => {
   }, [visibleProducts]);
 
   const fetchProducts = () => {
-    axios.get(`http://localhost:3002/products?limit=${visibleProducts}`)
+    axios.get(`http://localhost:3002/api/products?limit=${visibleProducts}`)
       .then(response => {
         setProductList(response.data);
       })

@@ -1,82 +1,99 @@
 import express from 'express';
 import bcrypt from 'bcrypt';
-import db from './db.mjs';
-import { getSteamGameDetails } from './steamUtils.mjs';
+import session from 'express-session';
+import supabase from './supabaseClient.js';
 
 const router = express.Router();
 
-const checkRole = (roleName) => {
-    return (req, res, next) => {
-        const SQL = 'SELECT name FROM Roles WHERE id = ?';
-        db.query(SQL, [req.session.roleId], (err, result) => {
-            if (err) {
-                console.error('Ошибка при проверке роли:', err);
-                return res.status(500).json({ error: "Ошибка на сервере" });
-            }
-            if (result.length > 0 && result[0].name === roleName) {
-                return next();
-            } else {
-                return res.status(403).json('Forbidden');
-            }
-        });
-    };
-};
-
 const isAuthenticated = (req, res, next) => {
+    console.log('Checking authentication:', req.session);
     if (req.session.userId) {
         return next();
     } else {
-        return res.status(401).json('Unauthorized');
+        return res.status(401).json({ error: 'Unauthorized' });
     }
 };
 
-router.post('/login', (req, res) => {
-    const { username, password } = req.body;
-    const SQL = 'SELECT * FROM Users WHERE username = ?';
-    db.query(SQL, [username], (err, data) => {
-        if (err) return res.status(500).json({ error: "Ошибка на сервере" });
-        if (data.length > 0) {
-            const user = data[0];
-            const passwordMatch = bcrypt.compareSync(password, user.password);
-            if (passwordMatch) {
-                req.session.userId = user.id;
-                req.session.roleId = user.role_id;
-                return res.json({ message: 'Login successful', roleId: user.role_id });
-            } else {
-                return res.status(401).json({ error: "Неверный пароль" });
-            }
-        } else {
-            return res.status(404).json({ error: "Пользователь не найден" });
+
+const checkRole = (roleName) => {
+    return async (req, res, next) => {
+        console.log('Checking role:', req.session);
+        if (!req.session.roleId) {
+            return res.status(401).json({ error: 'Unauthorized' });
         }
-    });
-});
+        try {
+            const { data, error } = await supabase
+                .from('roles')
+                .select('name')
+                .eq('id', req.session.roleId)
+                .single();
 
-router.post('/register', (req, res) => {
+            if (error) throw error;
+
+            if (data.name === roleName) {
+                return next();
+            } else {
+                return res.status(403).json({ error: 'Forbidden' });
+            }
+        } catch (error) {
+            console.error('Ошибка при проверке роли:', error);
+            return res.status(500).json({ error: 'Ошибка на сервере' });
+        }
+    };
+};
+
+router.post('/register', async (req, res) => {
     const { username, email, password } = req.body;
-    const usernameSQL = 'SELECT * FROM Users WHERE username = ?';
-    const emailSQL = 'SELECT * FROM Users WHERE email = ?';
-
-    db.query(usernameSQL, [username], (err, usernameData) => {
-        if (err) return res.status(500).json({ error: "Ошибка на сервере" });
-        if (usernameData.length > 0) return res.status(409).json({ error: "Такой логин уже существует" });
-
-        db.query(emailSQL, [email], (err, emailData) => {
-            if (err) return res.status(500).json({ error: "Ошибка на сервере" });
-            if (emailData.length > 0) return res.status(409).json({ error: "Эта почта уже используется" });
-
-            bcrypt.hash(password, 10, (err, hashedPassword) => {
-                if (err) return res.status(500).json({ error: "Ошибка при хэшировании пароля" });
-
-                const insertSQL = 'INSERT INTO Users (username, email, password) VALUES (?, ?, ?)';
-                db.query(insertSQL, [username, email, hashedPassword], (err, data) => {
-                    if (err) return res.status(500).json({ error: "Ошибка на сервере" });
-                    return res.json({ message: "Регистрация успешна" });
-                });
-            });
-        });
-    });
+    try {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const { data, error } = await supabase
+        .from('users')
+        .insert([{ username, email, password: hashedPassword, role_id: 2 }]);
+  
+      if (error) {
+        if (error.code === '23505') {
+          return res.status(409).json({ error: 'Имя пользователя или адрес электронной почты уже используются' });
+        }
+        throw error;
+      }
+  
+      res.json({ message: 'Регистрация успешна' });
+    } catch (error) {
+      console.error('Ошибка при регистрации пользователя:', error);
+      res.status(500).json({ error: 'Ошибка на сервере при регистрации пользователя' });
+    }
 });
 
+router.post('/login', async (req, res) => {
+    const { username, password } = req.body; // используем username вместо email
+    try {
+        const { data: users, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('username', username); // проверяем по username
+
+        if (error) throw error;
+        if (users.length === 0) return res.status(404).json({ error: 'Пользователь не найден' });
+
+        const user = users[0];
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatch) return res.status(401).json({ error: 'Неверный пароль' });
+
+        req.session.userId = user.id;
+        req.session.roleId = user.role_id;
+        req.session.save(err => {
+            if (err) {
+                console.error('Session save error:', err);
+                return res.status(500).json({ error: 'Ошибка на сервере при сохранении сессии' });
+            }
+            res.json({ message: 'Login successful', roleId: user.role_id });
+        });
+    } catch (error) {
+        console.error('Ошибка при логине пользователя:', error);
+        res.status(500).json({ error: 'Ошибка на сервере при логине пользователя' });
+    }
+}); 
 router.get('/auth/check', (req, res) => {
     if (req.session.userId) {
         res.json({ authenticated: true });
@@ -85,418 +102,327 @@ router.get('/auth/check', (req, res) => {
     }
 });
 
-router.put('/profile', (req, res) => {
-    if (!req.session.userId) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-  
-    const { username, email, password } = req.body;
+router.get('/admin-data', isAuthenticated, checkRole('Админ'), (req, res) => {
+    res.json({ data: 'Эти данные доступны только Админам' });
+});
+
+router.get('/user-data', isAuthenticated, checkRole('Пользователь'), (req, res) => {
+    res.json({ data: 'Эти данные доступны только Пользователям' });
+});
+
+router.get('/profile', isAuthenticated, async (req, res) => {
     const userId = req.session.userId;
-    
-    let updateSQL = 'UPDATE Users SET username = ?, email = ? WHERE id = ?';
-    let queryParams = [username, email, userId];
-  
-    if (password) {
-      bcrypt.hash(password, 10, (err, hashedPassword) => {
-        if (err) return res.status(500).json({ error: 'Ошибка при хэшировании пароля' });
-  
-        updateSQL = 'UPDATE Users SET username = ?, email = ?, password = ? WHERE id = ?';
-        queryParams = [username, email, hashedPassword, userId];
-  
-        db.query(updateSQL, queryParams, (err, result) => {
-          if (err) {
-            console.error('Ошибка при обновлении данных пользователя:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-          }
-  
-          const SQL = 'SELECT username, email FROM Users WHERE id = ?';
-          db.query(SQL, [userId], (err, result) => {
-            if (err) {
-              console.error('Ошибка при получении данных пользователя:', err);
-              return res.status(500).json({ error: 'Ошибка на сервере' });
-            }
-  
-            return res.json(result[0]);
-          });
-        });
-      });
-    } else {
-      db.query(updateSQL, queryParams, (err, result) => {
-        if (err) {
-          console.error('Ошибка при обновлении данных пользователя:', err);
-          return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-  
-        const SQL = 'SELECT username, email FROM Users WHERE id = ?';
-        db.query(SQL, [userId], (err, result) => {
-          if (err) {
-            console.error('Ошибка при получении данных пользователя:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-          }
-  
-          return res.json(result[0]);
-        });
-      });
+    try {
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('username, email, avatar, description')
+            .eq('id', userId)
+            .single();
+
+        if (error) throw error;
+
+        res.json(user);
+    } catch (error) {
+        console.error('Ошибка при получении данных профиля:', error);
+        res.status(500).json({ error: 'Ошибка на сервере' });
     }
 });
 
-router.get('/profile', (req, res) => {
-    if (!req.session.userId) {
-        return res.status(401).json({ error: 'Unauthorized' });
+router.put('/profile', isAuthenticated, async (req, res) => {
+    const { username, email, currentPassword, newPassword } = req.body;
+    const userId = req.session.userId;
+    const updates = { username, email };
+
+    if (newPassword) {
+        const { data: user, error } = await supabase
+            .from('users')
+            .select('password')
+            .eq('id', userId)
+            .single();
+
+        if (error) throw error;
+
+        const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!passwordMatch) return res.status(401).json({ error: 'Неверный текущий пароль' });
+
+        updates.password = await bcrypt.hash(newPassword, 10);
     }
 
-    const userId = req.session.userId;
+    try {
+        const { data, error } = await supabase
+            .from('users')
+            .update(updates)
+            .eq('id', userId);
 
-    const SQL = 'SELECT username, email FROM Users WHERE id = ?';
-    db.query(SQL, [userId], (err, result) => {
-        if (err) {
-            console.error('Ошибка при получении данных пользователя:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
+        if (error) throw error;
 
-        if (result.length === 0) {
-            return res.status(404).json({ error: 'Пользователь не найден' });
-        }
-
-        return res.json(result[0]);
-    });
+        res.json({ message: 'Профиль обновлен', ...updates });
+    } catch (error) {
+        console.error('Ошибка при обновлении данных пользователя:', error);
+        res.status(500).json({ error: 'Ошибка на сервере' });
+    }
 });
 
 router.post('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
-            return res.status(500).json({ error: "Ошибка при выходе из системы" });
+            return res.status(500).json({ error: 'Ошибка при выходе из системы' });
         }
         res.clearCookie('user_sid');
-        return res.json({ message: "Logout successful" });
+        return res.json({ message: 'Logout successful' });
     });
 });
 
-router.get('/products', (req, res) => {
-    const limit = req.query.limit || 10;
-    db.query(`SELECT * FROM products LIMIT ${limit}`, (err, result) => {
-        if (err) {
-            console.error('Ошибка при получении данных о товарах:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-        res.json(result);
-    });
-});
-
-router.get('/products/recommended', (req, res) => {
-    db.query('SELECT * FROM Products WHERE recommended = 1', (err, result) => {
-        if (err) {
-            console.error('Ошибка при получении рекомендуемых товаров:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-        res.json(result);
-    });
-});
-
-router.get('/products/discounts', (req, res) => {
-    db.query('SELECT * FROM Products WHERE discount > 0', (err, result) => {
-        if (err) {
-            console.error('Ошибка при получении товаров со скидкой:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-        res.json(result);
-    });
-});
-
-router.get('/products/new', (req, res) => {
-    db.query('SELECT * FROM Products WHERE new = 1', (err, result) => {
-        if (err) {
-            console.error('Ошибка при получении новых товаров:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-        res.json(result);
-    });
-});
-
-router.get('/sliders', (req, res) => {
-    const SQL = `
-        SELECT Sliders.*, Products.name, Sliders.image as product_image 
-        FROM Sliders 
-        JOIN Products ON Sliders.product_id = Products.id
-    `;
-    db.query(SQL, (err, result) => {
-        if (err) {
-            console.error('Ошибка при получении слайдов:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-        res.json(result);
-    });
-});
-
-router.get('/products/:id', (req, res) => {
-    const { id } = req.params;
-
-    const productQuery = 'SELECT * FROM Products WHERE id = ?';
-    const reviewsQuery = 'SELECT author, content FROM Reviews WHERE product_id = ?';
-
-    db.query(productQuery, [id], (err, productResult) => {
-        if (err) {
-            console.error('Ошибка при получении данных о товаре:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-        if (productResult.length === 0) {
-            return res.status(404).json({ error: 'Товар не найден' });
-        }
-
-        const product = productResult[0];
-
-        db.query(reviewsQuery, [id], (err, reviewsResult) => {
-            if (err) {
-                console.error('Ошибка при получении отзывов:', err);
-                return res.status(500).json({ error: 'Ошибка на сервере' });
-            }
-
-            product.reviews = reviewsResult;
-            res.json(product);
-        });
-    });
-});
-
-router.get('/all-products', (req, res) => {
-    let SQL = 'SELECT * FROM Products';
-    const filters = [];
-    const queryParams = [];
-
-    if (req.query.category && req.query.category !== 'all-products') {
-        filters.push('category = ?');
-        queryParams.push(req.query.category);
-    }
-
-    if (req.query.recommended === 'true') {
-        filters.push('recommended = 1');
-    }
-
-    if (req.query.discount === 'true') {
-        filters.push('discount > 0');
-    }
-
-    if (req.query.new === 'true') {
-        filters.push('new = 1');
-    }
-
-    if (req.query.search) {
-        filters.push('name LIKE ?');
-        queryParams.push(`%${req.query.search}%`);
-    }
-
-    if (filters.length > 0) {
-        SQL += ' WHERE ' + filters.join(' AND ');
-    }
-
-    if (req.query.sortBy) {
-        const sortColumn = req.query.sortBy;
-        const sortOrder = req.query.order === 'desc' ? 'DESC' : 'ASC';
-        SQL += ` ORDER BY ${sortColumn} ${sortOrder}`;
-    }
-
-    db.query(SQL, queryParams, (err, result) => {
-        if (err) {
-            console.error('Ошибка при получении данных о товарах:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-        res.json(result);
-    });
-});
-
-router.get('/categories', (req, res) => {
-    const SQL = 'SELECT * FROM Categories';
-    db.query(SQL, (err, result) => {
-        if (err) {
-            console.error('Ошибка при получении категорий:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-        res.json(result);
-    });
-});
-
-
-router.post('/favorites', isAuthenticated, (req, res) => {
-    const userId = req.session.userId;
-    const { productId } = req.body;
-
-    const checkSQL = 'SELECT * FROM Favorites WHERE user_id = ? AND product_id = ?';
-    db.query(checkSQL, [userId, productId], (err, results) => {
-        if (err) {
-            console.error('Ошибка при проверке избранного:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-
-        if (results.length > 0) {
-            return res.status(400).json({ error: 'Товар уже в избранном' });
-        }
-
-        const insertSQL = 'INSERT INTO Favorites (user_id, product_id) VALUES (?, ?)';
-        db.query(insertSQL, [userId, productId], (err, result) => {
-            if (err) {
-                console.error('Ошибка при добавлении товара в избранное:', err);
-                return res.status(500).json({ error: 'Ошибка на сервере' });
-            }
-            res.json({ message: 'Товар добавлен в избранное' });
-        });
-    });
-});
-
-router.delete('/favorites/:productId', isAuthenticated, (req, res) => {
-    const userId = req.session.userId;
-    const { productId } = req.params;
-
-    const SQL = 'DELETE FROM Favorites WHERE user_id = ? AND product_id = ?';
-    db.query(SQL, [userId, productId], (err, result) => {
-        if (err) {
-            console.error('Ошибка при удалении товара из избранного:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-        res.json({ message: 'Товар удален из избранного' });
-    });
-});
-
-router.get('/favorites', isAuthenticated, (req, res) => {
-    const userId = req.session.userId;
-
-    const SQL = `
-        SELECT Products.* FROM Favorites
-        JOIN Products ON Favorites.product_id = Products.id
-        WHERE Favorites.user_id = ?
-    `;
-    db.query(SQL, [userId], (err, result) => {
-        if (err) {
-            console.error('Ошибка при получении избранных товаров:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-        res.json(result);
-    });
-});
-
-router.post('/cart', isAuthenticated, (req, res) => {
-    const userId = req.session.userId;
-    const { productId, quantity } = req.body;
-
-    const checkSQL = 'SELECT * FROM Cart WHERE user_id = ? AND product_id = ?';
-    db.query(checkSQL, [userId, productId], (err, results) => {
-        if (err) {
-            console.error('Ошибка при проверке корзины:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-
-        if (results.length > 0) {
-            const updateSQL = 'UPDATE Cart SET quantity = quantity + ? WHERE user_id = ? AND product_id = ?';
-            db.query(updateSQL, [quantity, userId, productId], (err, result) => {
-                if (err) {
-                    console.error('Ошибка при обновлении количества товара в корзине:', err);
-                    return res.status(500).json({ error: 'Ошибка на сервере' });
-                }
-                res.json({ message: 'Количество товара в корзине обновлено' });
-            });
-        } else {
-            const insertSQL = 'INSERT INTO Cart (user_id, product_id, quantity) VALUES (?, ?, ?)';
-            db.query(insertSQL, [userId, productId, quantity], (err, result) => {
-                if (err) {
-                    console.error('Ошибка при добавлении товара в корзину:', err);
-                    return res.status(500).json({ error: 'Ошибка на сервере' });
-                }
-                res.json({ message: 'Товар добавлен в корзину' });
-            });
-        }
-    });
-});
-
-router.delete('/cart/:productId', isAuthenticated, (req, res) => {
-    const userId = req.session.userId;
-    const { productId } = req.params;
-
-    const SQL = 'DELETE FROM Cart WHERE user_id = ? AND product_id = ?';
-    db.query(SQL, [userId, productId], (err, result) => {
-        if (err) {
-            console.error('Ошибка при удалении товара из корзины:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-        res.json({ message: 'Товар удален из корзины' });
-    });
-});
-
-router.post('/cart', isAuthenticated, (req, res) => {
-    const userId = req.session.userId;
-    const { productId, quantity } = req.body;
-
-    const checkSQL = 'SELECT * FROM Cart WHERE user_id = ? AND product_id = ?';
-    db.query(checkSQL, [userId, productId], (err, results) => {
-        if (err) {
-            console.error('Ошибка при проверке корзины:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-
-        if (results.length > 0) {
-            const updateSQL = 'UPDATE Cart SET quantity = quantity + ? WHERE user_id = ? AND product_id = ?';
-            db.query(updateSQL, [quantity, userId, productId], (err, result) => {
-                if (err) {
-                    console.error('Ошибка при обновлении количества товара в корзине:', err);
-                    return res.status(500).json({ error: 'Ошибка на сервере' });
-                }
-                res.json({ message: 'Количество товара в корзине обновлено' });
-            });
-        } else {
-            const insertSQL = 'INSERT INTO Cart (user_id, product_id, quantity) VALUES (?, ?, ?)';
-            db.query(insertSQL, [userId, productId, quantity], (err, result) => {
-                if (err) {
-                    console.error('Ошибка при добавлении товара в корзину:', err);
-                    return res.status(500).json({ error: 'Ошибка на сервере' });
-                }
-                res.json({ message: 'Товар добавлен в корзину' });
-            });
-        }
-    });
-});
-
-router.get('/cart', isAuthenticated, (req, res) => {
-    const userId = req.session.userId;
-
-    const SQL = `
-        SELECT Products.*, Cart.quantity FROM Cart
-        JOIN Products ON Cart.product_id = Products.id
-        WHERE Cart.user_id = ?
-    `;
-    db.query(SQL, [userId], (err, result) => {
-        if (err) {
-            console.error('Ошибка при получении товаров корзины:', err);
-            return res.status(500).json({ error: 'Ошибка на сервере' });
-        }
-        res.json(result);
-    });
-});
-
-router.put('/cart/:productId', isAuthenticated, (req, res) => {
-    const userId = req.session.userId;
-    const { productId } = req.params;
-    const { quantity } = req.body;
-  
-    const updateSQL = 'UPDATE Cart SET quantity = ? WHERE user_id = ? AND product_id = ?';
-    db.query(updateSQL, [quantity, userId, productId], (err, result) => {
-      if (err) {
-        console.error('Ошибка при обновлении количества товара в корзине:', err);
-        return res.status(500).json({ error: 'Ошибка на сервере' });
-      }
-      res.json({ message: 'Количество товара в корзине обновлено' });
-    });
-  });
-  
-router.get('/steam-game/:appId', async (req, res) => {
-    const { appId } = req.params;
-    console.log('Fetching Steam game details for appId:', appId); // Отладочная информация
+router.get('/sliders', async (req, res) => {
     try {
-      const gameData = await getSteamGameDetails(appId);
-      if (gameData) {
-        res.json(gameData);
-      } else {
-        res.status(404).json({ error: 'Game details not found for the provided appId' });
-      }
+        const { data: sliders, error } = await supabase
+            .from('sliders')
+            .select('*');
+
+        if (error) throw error;
+
+        res.json(sliders);
     } catch (error) {
-      console.error('Error fetching game details from Steam:', error); // Отладочная информация
-      res.status(500).json({ error: 'Error fetching game details from Steam' });
+        console.error('Ошибка при получении данных о слайдерах:', error);
+        res.status(500).json({ error: 'Ошибка на сервере' });
+    }
+});
+
+router.get('/categories', async (req, res) => {
+    try {
+        const { data: categories, error } = await supabase
+            .from('categories')
+            .select('*');
+
+        if (error) throw error;
+
+        res.json(categories);
+    } catch (error) {
+        console.error('Ошибка при получении данных о слайдерах:', error);
+        res.status(500).json({ error: 'Ошибка на сервере' });
+    }
+});
+
+router.get('/all-products', async (req, res) => {
+    const { search, sortBy, order } = req.query; // Получаем параметры запроса
+    try {
+        let query = supabase.from('products').select('*');
+
+        if (search) {
+            query = query.ilike('name', `%${search}%`);
+        }
+
+        if (sortBy) {
+            query = query.order(sortBy, { ascending: order === 'asc' });
+        }
+
+        const { data: products, error } = await query;
+
+        if (error) throw error;
+
+        res.json(products);
+    } catch (error) {
+        console.error('Ошибка при получении данных о товарах:', error);
+        res.status(500).json({ error: 'Ошибка на сервере' });
+    }
+});
+
+router.get('/products', async (req, res) => {
+    const { category, search, sortBy, order } = req.query; // Получаем параметры запроса
+    try {
+        let query = supabase.from('products').select('*');
+
+        if (category) {
+            // Получаем идентификатор категории по имени категории
+            const { data: categoryData, error: categoryError } = await supabase
+                .from('categories')
+                .select('id')
+                .eq('name', category)
+                .single();
+
+            if (categoryError) throw categoryError;
+
+            if (categoryData) {
+                query = query.eq('category_id', categoryData.id); // Используем идентификатор категории в запросе
+            }
+        }
+
+        if (search) {
+            query = query.ilike('name', `%${search}%`);
+        }
+
+        if (sortBy) {
+            query = query.order(sortBy, { ascending: order === 'asc' });
+        }
+
+        const { data: products, error } = await query;
+
+        if (error) throw error;
+
+        res.json(products);
+    } catch (error) {
+        console.error('Ошибка при получении данных о товарах:', error);
+        res.status(500).json({ error: 'Ошибка на сервере' });
+    }
+});
+
+router.get('/products/recommended', async (req, res) => {
+    const limit = req.query.limit || 10;
+    try {
+        const { data: products, error } = await supabase
+            .from('products')
+            .select('*')
+            .eq('recommended', true)
+            .limit(parseInt(limit));
+
+        if (error) throw error;
+
+        res.json(products);
+    } catch (error) {
+        console.error('Ошибка при получении данных о рекомендованных товарах:', error);
+        res.status(500).json({ error: 'Ошибка на сервере' });
+    }
+});
+
+router.get('/products/discounts', async (req, res) => {
+    const limit = req.query.limit || 10;
+    try {
+        const { data: products, error } = await supabase
+            .from('products')
+            .select('*')
+            .eq('discounts', true)
+            .limit(parseInt(limit));
+
+        if (error) throw error;
+
+        res.json(products);
+    } catch (error) {
+        console.error('Ошибка при получении данных о рекомендованных товарах:', error);
+        res.status(500).json({ error: 'Ошибка на сервере' });
+    }
+});
+
+router.get('/products/new', async (req, res) => {
+    const limit = req.query.limit || 10;
+    try {
+        const { data: products, error } = await supabase
+            .from('products')
+            .select('*')
+            .eq('new', true)
+            .limit(parseInt(limit));
+
+        if (error) throw error;
+
+        res.json(products);
+    } catch (error) {
+        console.error('Ошибка при получении данных о рекомендованных товарах:', error);
+        res.status(500).json({ error: 'Ошибка на сервере' });
+    }
+});
+
+router.get('/products/:id', async (req, res) => {
+    const productId = req.params.id;
+    try {
+        const { data: product, error } = await supabase
+            .from('products')
+            .select('*')
+            .eq('id', productId)
+            .single();
+
+        if (error) throw error;
+
+        if (!product) return res.status(404).json({ error: 'Товар не найден' });
+
+        res.json(product);
+    } catch (error) {
+        console.error('Ошибка при получении данных о товаре:', error);
+        res.status(500).json({ error: 'Ошибка на сервере' });
+    }
+});
+router.post('/favorites/:productId', isAuthenticated, async (req, res) => {
+    const userId = req.session.userId;
+    const productId = req.params.productId;
+    try {
+        // Проверяем, есть ли товар уже в избранном
+        const { data: existingFavorite } = await supabase
+            .from('favorites')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('product_id', productId)
+            .single();
+
+        if (existingFavorite) {
+            // Если товар уже в избранном, удаляем его
+            await supabase
+                .from('favorites')
+                .delete()
+                .eq('id', existingFavorite.id);
+            res.json({ message: 'Товар удален из избранного' });
+        } else {
+            // Если товар не в избранном, добавляем его
+            await supabase
+                .from('favorites')
+                .insert([{ user_id: userId, product_id: productId }]);
+            res.json({ message: 'Товар добавлен в избранное' });
+        }
+    } catch (error) {
+        console.error('Ошибка при обработке избранного:', error);
+        res.status(500).json({ error: 'Ошибка на сервере' });
+    }
+});
+router.post('/cart', isAuthenticated, async (req, res) => {
+    const userId = req.session.userId;
+    const { productId, quantity } = req.body;
+    try {
+        const { data, error } = await supabase
+            .from('cart')
+            .insert([{ user_id: userId, product_id: productId, quantity }]);
+
+        if (error) throw error;
+
+        res.json({ message: 'Товар добавлен в корзину' });
+    } catch (error) {
+        console.error('Ошибка при добавлении товара в корзину:', error);
+        res.status(500).json({ error: 'Ошибка на сервере' });
+    }
+});
+
+router.get('/cart', isAuthenticated, async (req, res) => {
+    const userId = req.session.userId;
+    try {
+        const { data: cart, error } = await supabase
+            .from('cart')
+            .select('*, products(*)')
+            .eq('user_id', userId);
+
+        if (error) throw error;
+
+        res.json(cart);
+    } catch (error) {
+        console.error('Ошибка при получении данных о корзине:', error);
+        res.status(500).json({ error: 'Ошибка на сервере' });
+    }
+});
+
+router.post('/steam-games', async (req, res) => {
+    try {
+        const { gameId } = req.body;
+        const gameDetails = await getSteamGameDetails(gameId);
+        res.json(gameDetails);
+    } catch (error) {
+        console.error('Ошибка при получении данных о игре Steam:', error);
+        res.status(500).json({ error: 'Ошибка при получении данных о игре Steam' });
+    }
+});
+
+router.get('/steam-game/:appId', async (req, res) => {
+    try {
+        const { appId } = req.params;
+        const gameDetails = await getSteamGameDetails(appId);
+        res.json(gameDetails);
+    } catch (error) {
+        console.error('Ошибка при получении данных о игре Steam:', error);
+        res.status(500).json({ error: 'Ошибка при получении данных о игре Steam' });
     }
 });
 

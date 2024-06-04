@@ -15,7 +15,7 @@ function Header() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get('http://localhost:3002/profile', { withCredentials: true });
+        const res = await axios.get('http://localhost:3002/api/profile', { withCredentials: true });
         setUser(res.data);
         if (res.data.role === 'admin') {
           setIsAdmin(true);
@@ -43,7 +43,7 @@ function Header() {
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:3002/logout', {}, { withCredentials: true });
+      await axios.post('http://localhost:3002/api/logout', {}, { withCredentials: true });
       setUser(null);
       setIsAdmin(false);
       navigate('/store'); // Перенаправляем на страницу /store

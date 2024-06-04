@@ -1,4 +1,3 @@
-// LoginPage.jsx
 import React, { useState } from 'react';
 import './LoginPage.css';
 import Header from '../../components/Header/Header';
@@ -9,7 +8,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 export const LoginPage = () => {
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(""); // изменено на username
   const [password, setPassword] = useState(""); 
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
@@ -17,15 +16,15 @@ export const LoginPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const res = await axios.post('http://localhost:3002/login', { username, password }, { withCredentials: true });
-      if (res.data && res.data.message === 'Login successful') {
-        navigate('/profile');
-      } else {
-        setErrorMessage("Неверный логин или пароль");
-      }
+        const res = await axios.post('http://localhost:3002/api/login', { username, password }, { withCredentials: true }); // изменено на username
+        if (res.data && res.data.message === 'Login successful') {
+            navigate('/profile');
+        } else {
+            setErrorMessage(res.data.error || "Неверный логин или пароль");
+        }
     } catch (err) {
-      console.log(err);
-      setErrorMessage("Ошибка сервера. Попробуйте позже.");
+        console.log(err);
+        setErrorMessage("Ошибка сервера. Попробуйте позже.");
     }
   }
 
@@ -47,7 +46,7 @@ export const LoginPage = () => {
               <img src={user} alt="Login" />
               <input 
                 type="text" 
-                placeholder='Логин' 
+                placeholder='Username' // изменено на Username
                 value={username} 
                 onChange={(e) => setUsername(e.target.value)} 
                 required 

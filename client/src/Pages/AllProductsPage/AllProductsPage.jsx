@@ -16,14 +16,9 @@ function AllProductsPage() {
   const [sortBy, setSortBy] = useState('');
   const [order, setOrder] = useState('asc');
   const [categories, setCategories] = useState([]);
-  const [category, setCategory] = useState('all-products'); 
+  const [category, setCategory] = useState('all-products');
   const navigate = useNavigate();
-
   const query = useQuery();
-
-  useEffect(() => {
-    fetchProducts();
-  }, [search, category, sortBy, order]); 
 
   useEffect(() => {
     const categoryFromQuery = query.get('category');
@@ -36,8 +31,12 @@ function AllProductsPage() {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    fetchProducts();
+  }, [search, category, sortBy, order]);
+
   const fetchCategories = () => {
-    axios.get('http://localhost:3002/categories')
+    axios.get('http://localhost:3002/api/categories')
       .then(response => {
         setCategories(response.data);
       })
@@ -47,24 +46,17 @@ function AllProductsPage() {
   };
 
   const fetchProducts = () => {
-    let endpoint = '/all-products';
-    if (category === 'recommended') {
-      endpoint = '/products/recommended';
-    } else if (category === 'discounts') {
-      endpoint = '/products/discounts';
-    } else if (category === 'new') {
-      endpoint = '/products/new';
+    let endpoint = '/api/all-products';
+    if (category !== 'all-products') {
+      endpoint = `/api/products/${category}`;
     }
 
     axios.get(`http://localhost:3002${endpoint}`, {
       params: {
         search,
-        category,
-        recommended: category === 'recommended' ? 1 : undefined,
-        discount: category === 'discounts' ? 1 : undefined,
-        isNew: category === 'new' ? 1 : undefined,
         sortBy,
         order,
+        category,
       },
     })
       .then(response => {

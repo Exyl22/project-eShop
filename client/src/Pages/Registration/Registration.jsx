@@ -1,4 +1,4 @@
-// RegisterPage.jsx
+// RegisterPage.js
 import React, { useState } from 'react';
 import './Registration.css';
 import Header from '../../components/Header/Header';
@@ -19,15 +19,19 @@ export const RegisterPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const res = await axios.post('http://localhost:3002/register', { username, email, password }, { withCredentials: true });
+      const res = await axios.post('http://localhost:3002/api/register', { username, email, password }, { withCredentials: true });
       if (res.data && res.data.message === 'Регистрация успешна') {
         navigate('/login');
       } else {
         setErrorMessage(res.data.error);
       }
     } catch (err) {
-      console.log(err);
-      setErrorMessage("Ошибка сервера. Попробуйте позже.");
+      if (err.response && err.response.status === 409) {
+        setErrorMessage("Имя пользователя или адрес электронной почты уже используются.");
+      } else {
+        console.log(err);
+        setErrorMessage("Ошибка сервера. Попробуйте позже.");
+      }
     }
   }
 

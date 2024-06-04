@@ -13,10 +13,10 @@ const ProfilePage = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [avatar, setAvatar] = useState(null);
   const [message, setMessage] = useState('');
-  const [orders, setOrders] = useState([]);
+  const [favoritesCount, setFavoritesCount] = useState(0);
 
   useEffect(() => {
-    axios.get('http://localhost:3002/profile', { withCredentials: true })
+    axios.get('http://localhost:3002/api/profile', { withCredentials: true })
       .then(res => {
         if (res.data) {
           setUser(res.data);
@@ -28,9 +28,9 @@ const ProfilePage = () => {
         console.log(err);
       });
 
-    axios.get('http://localhost:3002/orders', { withCredentials: true })
+    axios.get('http://localhost:3002/api/favorites', { withCredentials: true })
       .then(res => {
-        setOrders(res.data);
+        setFavoritesCount(res.data.length);
       })
       .catch(err => {
         console.log(err);
@@ -52,7 +52,7 @@ const ProfilePage = () => {
       formData.append('avatar', avatar);
     }
 
-    axios.put('http://localhost:3002/profile', formData, { withCredentials: true })
+    axios.put('http://localhost:3002/api/profile', formData, { withCredentials: true })
       .then(res => {
         if (res.data) {
           setMessage('Изменения успешно сохранены');
@@ -67,7 +67,7 @@ const ProfilePage = () => {
   };
 
   const handleLogout = () => {
-    axios.post('http://localhost:3002/logout', {}, { withCredentials: true })
+    axios.post('http://localhost:3002/api/logout', {}, { withCredentials: true })
       .then(res => {
         if (res.data) {
           window.location.href = '/login';
@@ -88,11 +88,17 @@ const ProfilePage = () => {
       <div className="profile-container">
         {user ? (
           <div className="profile-info">
-            <h1>Профиль</h1>
-            {editMode ? (
+            <div className="user-details">
+              <h2>{user.username}</h2>
+              <p>Избранные игры: {favoritesCount}</p>
+              <p className="description">{user.description || 'Описание пользователя...'}</p>
+            </div>
+            <div className="avatar-edit">
+              <img src={user.avatar || 'default-avatar.png'} alt="Avatar" className="avatar" />
+              <button onClick={() => setEditMode(true)}>Редактировать</button>
+            </div>
+            {editMode && (
               <div className="edit-form">
-                <label>Логин:</label>
-                <input type="text" value={user.username} disabled />
                 <label>Email:</label>
                 <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                 <label>Текущий пароль:</label>
@@ -105,26 +111,8 @@ const ProfilePage = () => {
                 <input type="file" onChange={handleAvatarChange} />
                 <button onClick={handleSaveChanges}>Сохранить изменения</button>
               </div>
-            ) : (
-              <>
-                <img src={user.avatar || 'default-avatar.png'} alt="Avatar" className="avatar" />
-                <p>Логин: {user.username}</p>
-                <p>Email: {user.email}</p>
-                <button onClick={() => setEditMode(true)}>Редактировать</button>
-              </>
             )}
-            <button onClick={handleLogout}>Выйти</button>
             {message && <p className="message">{message}</p>}
-            <h2>История заказов</h2>
-            <ul className="orders-list">
-              {orders.map(order => (
-                <li key={order.id}>
-                  <p>Заказ №{order.id}</p>
-                  <p>Дата: {new Date(order.date).toLocaleDateString()}</p>
-                  <p>Сумма: {order.total} руб.</p>
-                </li>
-              ))}
-            </ul>
           </div>
         ) : (
           <div className="loading">Загрузка...</div>

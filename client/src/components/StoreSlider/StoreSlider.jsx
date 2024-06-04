@@ -17,14 +17,14 @@ function StoreSlider() {
   }, []);
 
   const fetchSliders = () => {
-    axios.get('http://localhost:3002/sliders')
+    axios.get('http://localhost:3002/api/sliders')
       .then(response => {
         setSliders(response.data);
       })
       .catch(error => {
         console.error('Ошибка при загрузке слайдов:', error);
       });
-  };
+};
 
   const updateCurrentSlide = (oldIndex, newIndex) => {
     setIsSliding(true);

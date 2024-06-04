@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './ProductsCarousel.css';
 import Notification from './Notification';
+import { Link } from 'react-router-dom';
 
 const ProductsCarousel = () => {
   const [products, setProducts] = useState([]);
@@ -13,23 +14,23 @@ const ProductsCarousel = () => {
 
   useEffect(() => {
     fetchProducts(activeTab);
-    fetchFavorites(); // Загрузка избранных товаров при монтировании компонента
+    fetchFavorites();
   }, [activeTab]);
 
   const fetchProducts = (tab) => {
     let endpoint = '';
     switch (tab) {
       case 'recommended':
-        endpoint = '/products/recommended';
+        endpoint = '/api/products/recommended';
         break;
       case 'discounts':
-        endpoint = '/products/discounts';
+        endpoint = '/api/products/discounts';
         break;
       case 'new':
-        endpoint = '/products/new';
+        endpoint = '/api/products/new';
         break;
       default:
-        endpoint = '/products/recommended';
+        endpoint = '/api/products/recommended';
     }
 
     axios.get(`http://localhost:3002${endpoint}`)
@@ -42,7 +43,7 @@ const ProductsCarousel = () => {
   };
 
   const fetchFavorites = () => {
-    axios.get('http://localhost:3002/favorites', { withCredentials: true })
+    axios.get('http://localhost:3002/api/favorites', { withCredentials: true })
       .then(response => {
         setFavorites(response.data.map(product => product.id)); // Предполагается, что сервер возвращает массив объектов с id товаров
       })
@@ -55,41 +56,34 @@ const ProductsCarousel = () => {
     setActiveTab(tab);
   };
 
-  const handleProductClick = (id) => {
-    navigate(`/products/${id}`);
-  };
-
   const handleLikeClick = (event, id) => {
     event.stopPropagation();
     const isFavorite = favorites.includes(id);
     const method = isFavorite ? 'delete' : 'post';
-    const endpoint = isFavorite ? `/favorites/${id}` : '/favorites';
-    const data = isFavorite ? {} : { productId: id };
 
     axios({
-      method,
-      url: `http://localhost:3002${endpoint}`,
-      data,
-      withCredentials: true
+        method,
+        url: `http://localhost:3002/api/favorites/${id}`,
+        withCredentials: true
     })
     .then(response => {
-      console.log(response.data.message);
-      if (isFavorite) {
-        setFavorites(prevFavorites => prevFavorites.filter(favId => favId !== id));
-        setNotificationMessage('Товар удален из избранного');
-      } else {
-        setFavorites(prevFavorites => [...prevFavorites, id]);
-        setNotificationMessage('Товар добавлен в избранное');
-      }
-      setTimeout(() => setNotificationMessage(''), 2000);
+        console.log(response.data.message);
+        if (isFavorite) {
+            setFavorites(prevFavorites => prevFavorites.filter(favId => favId !== id));
+            setNotificationMessage('Товар удален из избранного');
+        } else {
+            setFavorites(prevFavorites => [...prevFavorites, id]);
+            setNotificationMessage('Товар добавлен в избранное');
+        }
+        setTimeout(() => setNotificationMessage(''), 2000);
     })
     .catch(error => {
-      if (error.response && error.response.status === 401) {
-        console.error('Пользователь не авторизован. Перенаправление на страницу входа.');
-        navigate('/login');
-      } else {
-        console.error('Ошибка при обработке избранного:', error);
-      }
+        if (error.response && error.response.status === 401) {
+            console.error('Пользователь не авторизован. Перенаправление на страницу входа.');
+            navigate('/login');
+        } else {
+            console.error('Ошибка при обработке избранного:', error);
+        }
     });
   };
 
@@ -103,7 +97,7 @@ const ProductsCarousel = () => {
       {notificationMessage && <Notification message={notificationMessage} />}
       <div className="product-list">
         {products.map(product => (
-          <div key={product.id} className="product-item" onClick={() => handleProductClick(product.id)}>
+          <Link to={`/products/${product.id}`} key={product.id} className="product-item">
             <img src={product.image} alt={product.name} />
             <h3>{product.name}</h3>
             <div className="product-details">
@@ -115,7 +109,7 @@ const ProductsCarousel = () => {
                 {favorites.includes(product.id) ? '-' : '+'}
               </button>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
       <button className='load-more-button' onClick={() => fetchProducts(activeTab)}>Подробнее</button>

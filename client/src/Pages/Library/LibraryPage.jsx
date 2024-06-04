@@ -13,7 +13,7 @@ function LibraryPage() {
   useEffect(() => {
     const checkAuthentication = async () => {
       try {
-        const response = await fetch('http://localhost:3002/auth/check', { credentials: 'include' });
+        const response = await fetch('http://localhost:3002/api/auth/check', { credentials: 'include' });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -31,7 +31,7 @@ function LibraryPage() {
 
     const fetchFavoriteProducts = async () => {
       try {
-        const response = await fetch('http://localhost:3002/favorites', { credentials: 'include' });
+        const response = await fetch('http://localhost:3002/api/favorites', { credentials: 'include' });
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -47,18 +47,18 @@ function LibraryPage() {
 
   const removeFromFavorites = async (productId) => {
     try {
-      const response = await fetch(`http://localhost:3002/favorites/${productId}`, {
-        method: 'DELETE',
-        credentials: 'include'
-      });
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      setFavoriteProducts(favoriteProducts.filter(product => product.id !== productId));
+        const response = await fetch(`http://localhost:3002/api/favorites/${productId}`, {
+            method: 'DELETE',
+            credentials: 'include'
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        setFavoriteProducts(favoriteProducts.filter(product => product.id !== productId));
     } catch (error) {
-      console.error('Ошибка при удалении товара из избранного:', error);
+        console.error('Ошибка при удалении товара из избранного:', error);
     }
-  };
+};
 
   const handleProductClick = (productId) => {
     navigate(`/products/${productId}`);

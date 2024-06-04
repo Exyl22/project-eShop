@@ -22,7 +22,7 @@ const ProductPage = () => {
   useEffect(() => {
     console.log('Product ID:', productId);
     setLoading(true);
-    axios.get(`http://localhost:3002/products/${productId}`)
+    axios.get(`http://localhost:3002/api/products/${productId}`)
       .then(response => {
         console.log('Product data:', response.data); // Отладочная информация
         setProduct(response.data);
@@ -39,7 +39,7 @@ const ProductPage = () => {
 
   const fetchSteamDetails = (appId) => {
     console.log('Fetching Steam details for appId:', appId); // Отладочная информация
-    axios.get(`http://localhost:3002/steam-game/${appId}`)
+    axios.get(`http://localhost:3002/api/steam-game/${appId}`)
       .then(response => {
         console.log('Steam API Response:', response.data); // Отладочная информация
         const data = response.data;
@@ -78,7 +78,7 @@ const ProductPage = () => {
   };
 
   const handleAddToCart = () => {
-    axios.post('http://localhost:3002/cart', { productId: product.id, quantity: 1 }, { withCredentials: true })
+    axios.post('http://localhost:3002/api/cart', { productId: product.id, quantity: 1 }, { withCredentials: true })
       .then(response => {
         console.log('Product added to cart:', response.data);
         alert('Product added to cart');

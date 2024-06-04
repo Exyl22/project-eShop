@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom'; 
 import './CategoryCarousel.css';
 
 const CategoryCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [categories, setCategories] = useState([]);
-  const navigate = useNavigate(); // Use useNavigate instead of useHistory
+  const navigate = useNavigate(); 
 
   useEffect(() => {
-    fetch('http://localhost:3002/categories')
+    fetch('http://localhost:3002/api/categories')
       .then(response => response.json())
       .then(data => setCategories(data))
       .catch(error => console.error('Ошибка при получении категорий:', error));

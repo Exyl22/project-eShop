@@ -1,95 +1,109 @@
 .profile-container {
-  max-width: 1200px;
-  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   padding: 20px;
-  font-family: 'Arial', sans-serif;
-}
-
-.profile-container.light {
-  background-color: #f9f9f9;
-  color: #111;
-}
-
-.profile-container.dark {
-  background-color: #333;
-  color: #f9f9f9;
 }
 
 .profile-info {
-  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 80%;
+  max-width: 800px;
+  background-color: #1f2024;
+  border: 1px solid #1f2024;
+  border-radius: 8px;
   padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  background-color: #111;
 }
 
-.profile-info p {
-  margin: 10px 0;
+.user-details {
+  flex: 1;
+  margin-right: 20px;
 }
 
-.profile-info strong {
-  font-weight: bold;
+.user-details h2 {
+  margin: 0;
+  font-size: 24px;
 }
 
-.edit-form label {
-  display: block;
-  margin: 10px 0 5px;
-}
-
-.edit-form input,
-.edit-form select {
-  width: 100%;
-  padding: 8px;
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.edit-form button {
-  padding: 10px 20px;
-  background-color: #3498db;
-  border: none;
-  border-radius: 5px;
-  color: #fff;
+.user-details p {
+  margin: 8px 0;
   font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease-in-out;
 }
 
-.edit-form button:hover {
-  background-color: #2980b9;
+.description {
+  width: 600px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.avatar-edit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .avatar {
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   border-radius: 50%;
-  object-fit: cover;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 }
 
-.orders-list {
-  list-style: none;
-  padding: 0;
+.edit-form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-top: 20px;
 }
 
-.orders-list li {
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
+.edit-form label {
+  margin-bottom: 5px;
 }
 
-.orders-list li p {
-  margin: 5px 0;
+.edit-form input {
+  margin-bottom: 15px;
+  padding: 8px;
+  font-size: 16px;
+}
+
+.edit-form button {
+  align-self: flex-start;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit-form button:hover {
+  background-color: #0056b3;
+}
+
+button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #0056b3;
 }
 
 .message {
   margin-top: 10px;
-  color: green;
+  color: red;
 }
 
 .loading {
-  text-align: center;
-  margin-top: 50px;
   font-size: 24px;
-  color: #555;
+  color: #333;
 }
