@@ -343,7 +343,6 @@ router.post('/favorites/:productId', isAuthenticated, async (req, res) => {
     const userId = req.session.userId;
     const productId = req.params.productId;
     try {
-        // Проверяем, есть ли товар уже в избранном
         const { data: existingFavorite } = await supabase
             .from('favorites')
             .select('*')
@@ -352,14 +351,12 @@ router.post('/favorites/:productId', isAuthenticated, async (req, res) => {
             .single();
 
         if (existingFavorite) {
-            // Если товар уже в избранном, удаляем его
             await supabase
                 .from('favorites')
                 .delete()
                 .eq('id', existingFavorite.id);
             res.json({ message: 'Товар удален из избранного' });
         } else {
-            // Если товар не в избранном, добавляем его
             await supabase
                 .from('favorites')
                 .insert([{ user_id: userId, product_id: productId }]);
