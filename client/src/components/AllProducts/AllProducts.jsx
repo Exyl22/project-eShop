@@ -36,9 +36,16 @@ const AllProducts = () => {
               <div className="product-description">{product.description}</div>
             </div>
             <div className="product-actionss">
-            <button className="favorite-buttonn"><img src={heart} alt="Favorite" /></button>
+              <button className="favorite-buttonn"><img src={heart} alt="Favorite" /></button>
               <div className="product-pricee">
-                <span className="pricee">{product.price}</span>
+                {product.discount_percent ? (
+                  <>
+                    <span className="original-pricee">{product.price} руб.</span>
+                    <span className="discounted-pricee">{(product.price * (1 - product.discount_percent / 100)).toFixed(2)} руб.</span>
+                  </>
+                ) : (
+                  <span className="pricee">{product.price} руб.</span>
+                )}
                 <button className="buy-buttonn">Перейти</button>
               </div>
             </div>

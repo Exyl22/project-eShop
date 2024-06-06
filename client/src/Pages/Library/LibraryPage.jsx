@@ -47,18 +47,18 @@ function LibraryPage() {
 
   const removeFromFavorites = async (productId) => {
     try {
-        const response = await fetch(`http://localhost:3002/api/favorites/${productId}`, {
-            method: 'DELETE',
-            credentials: 'include'
-        });
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        setFavoriteProducts(favoriteProducts.filter(product => product.id !== productId));
+      const response = await fetch(`http://localhost:3002/api/favorites/${productId}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      setFavoriteProducts(favoriteProducts.filter(product => product.id !== productId));
     } catch (error) {
-        console.error('Ошибка при удалении товара из избранного:', error);
+      console.error('Ошибка при удалении товара из избранного:', error);
     }
-};
+  };
 
   const handleProductClick = (productId) => {
     navigate(`/products/${productId}`);
@@ -81,13 +81,22 @@ function LibraryPage() {
                   <button className="remove-button-fav" onClick={(e) => { e.stopPropagation(); removeFromFavorites(product.id); }}>✕</button>
                   <img src={product.image} alt={product.name} />
                   <h3>{product.name}</h3>
-                  <p className="price-fav">{product.price} руб.</p>
+                  <p className="price-fav">
+                    {product.discount_percent ? (
+                      <>
+                        <span className="original-price-fav">{product.price} руб.</span>
+                        <span className="discounted-price-fav">{(product.price * (1 - product.discount_percent / 100)).toFixed(2)} руб.</span>
+                      </>
+                    ) : (
+                      `${product.price} руб.`
+                    )}
+                  </p>
                 </div>
               ))
             ) : (
               <p>Тут пусто :(</p>
             )}
-          </div>
+          </div>  
         ) : (
           <p>Пожалуйста, авторизуйтесь, чтобы увидеть избранные товары.</p>
         )}

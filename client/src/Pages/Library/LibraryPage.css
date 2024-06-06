@@ -2,70 +2,81 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
-  }
+}
 
-  .favorite-h1-fav {
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .product-list-fav {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-  }
-  
-  .product-item-fav {
-    position: relative;
-    width: 200px;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s, box-shadow 0.3s;
-  }
-  
-  .product-item-fav:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  }
-  
-  .product-item-fav img {
-    width: 100%;
-    height: auto;
-    border-radius: 10px;
-  }
-  
-  .product-item-fav h3 {
-    margin: 10px 0;
-    font-size: 18px;
-    text-align: center;
-  }
-  
-  .price-fav {
-    font-size: 16px;
-    color: #148b9b;
-    text-align: center;
-  }
-  
-  .remove-button-fav {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: #ff4d4d;
-    border: none;
-    color: white;
-    font-size: 16px;
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-  }
-  
-  .product-item-fav:hover .remove-button-fav {
-    display: flex;
-  }
+.favorite-h1-fav {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.product-list-fav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: left;
+}
+
+.product-item-fav {
+  position: relative;
+  width: 200px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.product-item-fav:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.product-item-fav img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.product-item-fav h3 {
+  margin: 10px 0;
+  font-size: 18px;
+  text-align: center;
+}
+
+.price-fav {
+  font-size: 16px;
+  text-align: center;
+}
+
+.original-price-fav {
+  text-decoration: line-through;
+  color: red;
+  display: block;
+}
+
+.discounted-price-fav {
+  color: green;
+  font-weight: bold;
+  display: block;
+}
+
+.remove-button-fav {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #ff4d4d;
+  border: none;
+  color: white;
+  font-size: 16px;
+  border-radius: 50%;
+  width: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  display: none;
+}
+
+.product-item-fav:hover .remove-button-fav {
+  display: flex;
+}

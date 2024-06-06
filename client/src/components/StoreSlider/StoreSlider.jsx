@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import StoreSliderr from 'react-slick';
+import Slider from 'react-slick'; // Исправлено название компонента
 import axios from 'axios';
 import StoreSliderItem from './StoreSliderItem';
 import 'slick-carousel/slick/slick.css';
@@ -16,15 +16,15 @@ function StoreSlider() {
     fetchSliders();
   }, []);
 
-  const fetchSliders = () => {
-    axios.get('http://localhost:3002/api/sliders')
-      .then(response => {
-        setSliders(response.data);
-      })
-      .catch(error => {
-        console.error('Ошибка при загрузке слайдов:', error);
-      });
-};
+  const fetchSliders = async () => {
+    try {
+      const response = await axios.get('http://localhost:3002/api/sliders');
+      console.log('Loaded sliders:', response.data); // Проверка данных
+      setSliders(response.data);
+    } catch (error) {
+      console.error('Ошибка при загрузке слайдов:', error);
+    }
+  };
 
   const updateCurrentSlide = (oldIndex, newIndex) => {
     setIsSliding(true);
@@ -37,7 +37,7 @@ function StoreSlider() {
 
   return (
     <div className="custom-slider-container">
-      <StoreSliderr
+      <Slider
         dots={false}
         infinite={true}
         speed={1000}
@@ -54,7 +54,7 @@ function StoreSlider() {
             <StoreSliderItem slider={slider} />
           </div>
         ))}
-      </StoreSliderr>
+      </Slider>
       <div className="slide-switchers">
         {sliders.map((slider, index) => (
           <div

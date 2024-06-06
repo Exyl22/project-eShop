@@ -1,3 +1,5 @@
+// AdminPage.js
+
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AdminPage.css';
@@ -19,7 +21,7 @@ function AdminPage() {
   }, []);
 
   const fetchProducts = () => {
-    axios.get('http://localhost:3002/admin') 
+    axios.get('http://localhost:3002/api/admin', { withCredentials: true }) 
       .then(response => {
         setProducts(response.data); 
       })
@@ -44,7 +46,7 @@ function AdminPage() {
   };
 
   const confirmDelete = () => {
-    axios.delete(`http://localhost:3002/products/${selectedProduct.id}`)
+    axios.delete(`http://localhost:3002/api/products/${selectedProduct.id}`, { withCredentials: true })
       .then(() => {
         fetchProducts();
         setShowConfirmationModal(false);
@@ -84,8 +86,7 @@ function AdminPage() {
     <>
       <Header />
       <div className="admin-container">
-        <h1>Админка</h1>
-        <button className="add-button" onClick={handleAdd}>Добавить</button>
+      <h1>Админка</h1>
         <div className="admin-controls">
           <input
             type="text"
@@ -104,6 +105,7 @@ function AdminPage() {
             <option value="desc">По убыванию</option>
           </select>
         </div>
+        <button className="add-button" onClick={handleAdd}>Добавить</button>
         <table className="admin-table">
           <thead>
             <tr>

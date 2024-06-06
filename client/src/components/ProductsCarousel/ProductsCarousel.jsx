@@ -45,7 +45,7 @@ const ProductsCarousel = () => {
   const fetchFavorites = () => {
     axios.get('http://localhost:3002/api/favorites', { withCredentials: true })
       .then(response => {
-        setFavorites(response.data.map(product => product.id)); // Предполагается, что сервер возвращает массив объектов с id товаров
+        setFavorites(response.data.map(product => product.id)); 
       })
       .catch(error => {
         console.error('Ошибка при загрузке избранных товаров:', error);
@@ -62,12 +62,11 @@ const ProductsCarousel = () => {
     const method = isFavorite ? 'delete' : 'post';
 
     axios({
-        method,
-        url: `http://localhost:3002/api/favorites/${id}`,
-        withCredentials: true
+      method,
+      url: `http://localhost:3002/api/favorites/${id}`,
+      withCredentials: true
     })
     .then(response => {
-        console.log(response.data.message);
         if (isFavorite) {
             setFavorites(prevFavorites => prevFavorites.filter(favId => favId !== id));
             setNotificationMessage('Товар удален из избранного');
@@ -97,11 +96,22 @@ const ProductsCarousel = () => {
       {notificationMessage && <Notification message={notificationMessage} />}
       <div className="product-list">
         {products.map(product => (
-          <Link to={`/products/${product.id}`} key={product.id} className="product-item">
-            <img src={product.image} alt={product.name} />
-            <h3>{product.name}</h3>
+          <div key={product.id} className="product-item">
+            <Link to={`/products/${product.id}`} className="product-link">
+              <img src={product.image} alt={product.name} />
+              <h3>{product.name}</h3>
+            </Link>
             <div className="product-details">
-              <p className="price">{product.price} руб.</p>
+              <p className="price">
+                {product.discount_percent ? (
+                  <>
+                    <span className="original-price">{product.price} руб.</span>
+                    <span className="discounted-price">{(product.price * (1 - product.discount_percent / 100)).toFixed(2)} руб.</span>
+                  </>
+                ) : (
+                  `${product.price} руб.`
+                )}
+              </p>
               <button 
                 className={`like-button ${favorites.includes(product.id) ? 'favorite' : ''}`} 
                 onClick={(event) => handleLikeClick(event, product.id)}
@@ -109,7 +119,7 @@ const ProductsCarousel = () => {
                 {favorites.includes(product.id) ? '-' : '+'}
               </button>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
       <button className='load-more-button' onClick={() => fetchProducts(activeTab)}>Подробнее</button>

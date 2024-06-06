@@ -1,64 +1,57 @@
-import React, { useState, useEffect } from 'react';
+// ProductModal.js
+import React, { useState } from 'react';
 import axios from 'axios';
+import './ProductModal.css';
+
 function ProductModal({ product, onClose, fetchProducts }) {
-  const [formData, setFormData] = useState(product);
+  const [name, setName] = useState(product.name || '');
+  const [description, setDescription] = useState(product.description || '');
+  const [price, setPrice] = useState(product.price || '');
 
-  useEffect(() => {
-    setFormData(product);
-  }, [product]);
+  const handleSave = () => {
+    const payload = { name, description, price };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevData => ({ ...prevData, [name]: value }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const method = product.id ? 'put' : 'post';
-    const url = product.id ? `http://localhost:3002/products/${product.id}` : 'http://localhost:3002/products';
-
-    axios[method](url, formData)
-      .then(() => {
-        fetchProducts();
-        onClose();
-      })
-      .catch(error => {
-        console.error(`Ошибка при ${product.id ? 'редактировании' : 'добавлении'} товара:`, error);
-      });
+    if (product.id) {
+      axios.put(`http://localhost:3002/api/products/${product.id}`, payload, { withCredentials: true })
+        .then(() => {
+          fetchProducts();
+          onClose();
+        })
+        .catch(error => {
+          console.error('Ошибка при обновлении продукта:', error);
+        });
+    } else {
+      axios.post('http://localhost:3002/api/products', payload, { withCredentials: true })
+        .then(() => {
+          fetchProducts();
+          onClose();
+        })
+        .catch(error => {
+          console.error('Ошибка при добавлении продукта:', error);
+        });
+    }
   };
 
   return (
-    <div className="modal">
-      <div className="modal-contentt">
-        <span className="close" onClick={onClose}>&times;</span>
-        <h2>{product.id ? 'Редактировать' : 'Добавить'} товар</h2>
-        <form onSubmit={handleSubmit}>
-          <input
-            type="text"
-            name="name"
-            placeholder="Название"
-            value={formData.name}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            type="text"
-            name="description"
-            placeholder="Описание"
-            value={formData.description}
-            onChange={handleInputChange}
-            required
-          />
-          <input
-            type="number"
-            name="price"
-            placeholder="Цена"
-            value={formData.price}
-            onChange={handleInputChange}
-            required
-          />
-          <button type="submit">{product.id ? 'Сохранить' : 'Добавить'}</button>
-        </form>
+    <div className="modal-overlay-adm">
+      <div className="modal-content-adm">
+        <h2>{product.id ? 'Редактировать продукт' : 'Добавить продукт'}</h2>
+        <label>
+          Название:
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+        </label>
+        <label>
+          Описание:
+          <input type="text" value={description} onChange={(e) => setDescription(e.target.value)} />
+        </label>
+        <label>
+          Цена:
+          <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+        </label>
+        <div className="modal-actions-adm">
+          <button onClick={onClose}>Отмена</button>
+          <button onClick={handleSave}>Сохранить</button>
+        </div>
       </div>
     </div>
   );

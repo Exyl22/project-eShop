@@ -1,34 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate, useParams } from 'react-router-dom';
-import Slider from 'react-slick';
+import { useParams } from 'react-router-dom';
 import './ProductPage.css';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
 
 const ProductPage = () => {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [view, setView] = useState('description');
-  const [steamRequirements, setSteamRequirements] = useState(null);
-  const [steamDetails, setSteamDetails] = useState({ description: '', images: [], tags: [], headerImage: '' });
+  const [steamDetails, setSteamDetails] = useState({ description: '', images: [], tags: [], headerImage: '', pc_requirements: {} });
   const [modalImageIndex, setModalImageIndex] = useState(null);
   const [likeDislikeRatio, setLikeDislikeRatio] = useState(null);
-  const navigate = useNavigate();
+  const [showMore, setShowMore] = useState(false);
   const { productId } = useParams();
 
   useEffect(() => {
-    console.log('Product ID:', productId);
     setLoading(true);
     axios.get(`http://localhost:3002/api/products/${productId}`)
       .then(response => {
-        console.log('Product data:', response.data); // Отладочная информация
-        setProduct(response.data);
+        const productData = response.data;
+        setProduct(productData);
         setLoading(false);
-        if (response.data.steamAppId) {
-          fetchSteamDetails(response.data.steamAppId);
+        if (productData.steamappid && productData.steamDetails) {
+          setSteamDetails(productData.steamDetails);
+          calculateLikeDislikeRatio(productData.steamDetails);
+        } else {
+          setSteamDetails({ description: '', images: [], tags: [], headerImage: '', pc_requirements: {}, recommendations_total: 0, recommendations_positive: 0 });
         }
       })
       .catch(error => {
@@ -37,72 +35,59 @@ const ProductPage = () => {
       });
   }, [productId]);
 
-  const fetchSteamDetails = (appId) => {
-    console.log('Fetching Steam details for appId:', appId); // Отладочная информация
-    axios.get(`http://localhost:3002/api/steam-game/${appId}`)
-      .then(response => {
-        console.log('Steam API Response:', response.data); // Отладочная информация
-        const data = response.data;
-        setSteamRequirements(data.pc_requirements);
-        setSteamDetails(prevDetails => ({
-          ...prevDetails,
-          ...data.steamDetails
-        }));
-        calculateLikeDislikeRatio(data.steamDetails, appId); // Вычисление соотношения лайков/дизлайков
-      })
-      .catch(error => {
-        console.error('There was an error fetching the Steam game details!', error);
-      });
+  const calculateLikeDislikeRatio = (steamDetails) => {
+    const { recommendations_total, recommendations_positive } = steamDetails;
+    const positivePercentage = recommendations_total > 0 ? Math.round((recommendations_positive / recommendations_total) * 100) : 0;
+    setLikeDislikeRatio({ positive: positivePercentage, negative: 100 - positivePercentage });
   };
 
-  const calculateLikeDislikeRatio = (details, appId) => {
-    const { recommendations_total: total, recommendations_positive: positive } = details;
-    if (total && positive) {
-      const ratio = (positive / total) * 100;
-      setLikeDislikeRatio(ratio.toFixed(2)); // Установка соотношения с двумя знаками после запятой
+  const renderContent = () => {
+    if (view === 'description') {
+      return (
+        <div className="descriptionn">
+          <div dangerouslySetInnerHTML={{ __html: steamDetails.description }} />
+        </div>
+      );
+    } else if (view === 'requirements') {
+      return (
+        <div className="requirements">
+          <div dangerouslySetInnerHTML={{ __html: steamDetails.pc_requirements?.minimum || 'No minimum requirements available.' }} />
+          <div dangerouslySetInnerHTML={{ __html: steamDetails.pc_requirements?.recommended || 'No recommended requirements available.' }} />
+        </div>
+      );
     } else {
-      // Если информация о рекомендациях отсутствует, попробуем запросить ее отдельно
-      axios.get(`https://store.steampowered.com/appreviews/${appId}?json=1&filter=recent`)
-        .then(response => {
-          console.log('Steam Reviews API Response:', response.data); // Отладочная информация
-          const data = response.data;
-          if (data.query_summary && data.query_summary.total_reviews && data.query_summary.total_positive) {
-            const ratio = (data.query_summary.total_positive / data.query_summary.total_reviews) * 100;
-            setLikeDislikeRatio(ratio.toFixed(2));
-          }
-        })
-        .catch(error => {
-          console.error('Error fetching reviews from Steam:', error);
-        });
+      return null;
     }
+  };
+
+  const handlePrevImage = () => {
+    setModalImageIndex((prevIndex) => (prevIndex - 1 + steamDetails.images.length) % steamDetails.images.length);
+  };
+
+  const handleNextImage = () => {
+    setModalImageIndex((prevIndex) => (prevIndex + 1) % steamDetails.images.length);
   };
 
   const handleAddToCart = () => {
     axios.post('http://localhost:3002/api/cart', { productId: product.id, quantity: 1 }, { withCredentials: true })
       .then(response => {
-        console.log('Product added to cart:', response.data);
-        alert('Product added to cart');
+        alert('Товар добавлен в корзину');
       })
       .catch(error => {
-        console.error('Error adding product to cart:', error);
-        alert('Error adding product to cart');
+        console.error('Ошибка при добавлении товара в корзину:', error);
+        alert('Ошибка при добавлении товара в корзину');
       });
   };
 
-  const openModal = (index) => {
-    setModalImageIndex(index);
-  };
-
-  const closeModal = () => {
-    setModalImageIndex(null);
-  };
-
-  const nextImage = () => {
-    setModalImageIndex((prevIndex) => (prevIndex + 1) % steamDetails.images.length);
-  };
-
-  const prevImage = () => {
-    setModalImageIndex((prevIndex) => (prevIndex - 1 + steamDetails.images.length) % steamDetails.images.length);
+  const handleAddToFavorites = () => {
+    axios.post(`http://localhost:3002/api/favorites/${product.id}`, {}, { withCredentials: true })
+      .then(response => {
+        alert('Товар добавлен в избранное');
+      })
+      .catch(error => {
+        console.error('Ошибка при добавлении товара в избранное:', error);
+        alert('Ошибка при добавлении товара в избранное');
+      });
   };
 
   if (loading) {
@@ -113,112 +98,71 @@ const ProductPage = () => {
     return <div className="loading">Product not found</div>;
   }
 
-  const { name, price, images } = product;
-
-  const carouselSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-          infinite: true,
-          dots: true
-        }
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1,
-          initialSlide: 2
-        }
-      }
-    ]
-  };
+  const visibleImages = showMore ? steamDetails.images : steamDetails.images.slice(0, 3);
 
   return (
     <>
       <Header />
       <div className="product-page">
-        <div>
-          <button className="back-button" onClick={() => navigate('/all-products')}>← К каталогу</button>
-        </div>
+        <button className="back-button" onClick={() => window.history.back()}>Back</button>
         <div className="product-info-container">
           <div className="main-image-container">
-            <img src={steamDetails.headerImage || steamDetails.images[0]} alt="Main" className="main-image" />
-            <div className="product-price-button-container">
-              <div className="product-price">{price} руб.</div>
-              <button className="add-to-cart" onClick={handleAddToCart}>Добавить в корзину</button>
-            </div>
-            <button className="add-to-favorites">Добавить в избранное</button>
-          </div>
-          {likeDislikeRatio && (
-              <div className="like-dislike-ratio">
-                Соотношение лайков/дизлайков: {likeDislikeRatio}%
-              </div>
-            )}
-          <div className="product-info">
-            <div className="product-name">{name}</div>
+            <div className="product-name">{product.name}</div>
+            <img className="main-image" src={steamDetails.headerImage} alt="Header" />
             <div className="product-tags">
-              {steamDetails.tags && steamDetails.tags.length > 0 && steamDetails.tags.map((tag, index) => (
+              {steamDetails.tags.map((tag, index) => (
                 <span key={index} className="product-tag">{tag}</span>
               ))}
             </div>
-            <div className="product-images">
-              <Slider {...carouselSettings}>
-                {steamDetails.images.length > 0 && steamDetails.images.map((image, index) => (
-                  <div key={index}>
-                    <img src={image} alt={`Steam image ${index + 1}`} className="additional-image" onClick={() => openModal(index)} />
+            <div className="product-price-button-container">
+              <div className="product-price">
+                {product.discount_percent ? (
+                  <>
+                    <span className="original-price">{product.price} руб.</span>
+                    <span className="discounted-price">{(product.price * (1 - product.discount_percent / 100)).toFixed(2)} руб.</span>
+                  </>
+                ) : (
+                  `Р${product.price}`
+                )}
+              </div>
+              <button className="add-to-cart" onClick={handleAddToCart}>В корзину</button>
+              <button className="add-to-favorites" onClick={handleAddToFavorites}>В избранное</button>
+            </div>
+          </div>
+          <div className="product-info">
+            <div className="product-images-info">
+              {visibleImages.map((image, index) => (
+                <div key={index} className="image-container-info">
+                  <img className="additional-image-info" src={image} alt={`Screenshot ${index + 1}`} onClick={() => setModalImageIndex(index)} />
+                </div>
+              ))}
+              {steamDetails.images.length > 3 && (
+                <button className="show-more-button" onClick={() => setShowMore(!showMore)}>
+                  {showMore ? 'Показать меньше' : 'Показать больше'}
+                </button>
+              )}
+              {modalImageIndex !== null && (
+                <div className="modal">
+                  <div className="modal-content">
+                    <button className="prev" onClick={handlePrevImage}>&lt;</button>
+                    <img src={steamDetails.images[modalImageIndex]} alt={`Screenshot ${modalImageIndex + 1}`} />
+                    <button className="next" onClick={handleNextImage}>&gt;</button>
                   </div>
-                ))}
-                {images && images.slice(1).map((image, index) => (
-                  <div key={index}>
-                    <img src={image} alt={`${name} ${index + 1}`} className="additional-image" onClick={() => openModal(index + steamDetails.images.length)} />
-                  </div>
-                ))}
-              </Slider>
+                  <span className="close" onClick={() => setModalImageIndex(null)}>&times;</span>
+                </div>
+              )}
             </div>
           </div>
         </div>
-        <div className="product-extra-info">
-          <div className="tabs">
-            <button className={`tab ${view === 'description' ? 'active' : ''}`} onClick={() => setView('description')}>Описание</button>
-            <button className={`tab ${view === 'systemRequirements' ? 'active' : ''}`} onClick={() => setView('systemRequirements')}>Системные требования</button>
-          </div>
-          <div className="tab-content center-content">
-            {view === 'description' && <div>
-              <div dangerouslySetInnerHTML={{ __html: steamDetails.description }} />
-            </div>}
-            {view === 'systemRequirements' && (
-              <div>
-                {steamRequirements && (
-                  <div>
-                    <div dangerouslySetInnerHTML={{ __html: steamRequirements.minimum }} />
-                    <div dangerouslySetInnerHTML={{ __html: steamRequirements.recommended }} />
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+        <div className="tabs">
+          <div className={`tab ${view === 'description' ? 'active' : ''}`} onClick={() => setView('description')}>Описание</div>
+          <div className={`tab ${view === 'requirements' ? 'active' : ''}`} onClick={() => setView('requirements')}>Системные требования</div>
+        </div>
+        <div className="tab-content">
+          {renderContent()}
         </div>
       </div>
       <Footer />
-      {modalImageIndex !== null && (
-        <div className="modal" onClick={closeModal}>
-          <div className="modal-navigation">
-            <button className="prev" onClick={(e) => { e.stopPropagation(); prevImage(); }}>&#10094;</button>
-            <button className="next" onClick={(e) => { e.stopPropagation(); nextImage(); }}>&#10095;</button>
-          </div>
-          <span className="close" onClick={closeModal}>&times;</span>
-          <img className="modal-content" src={modalImageIndex < steamDetails.images.length ? steamDetails.images[modalImageIndex] : images[modalImageIndex - steamDetails.images.length]} alt="Modal" />
-        </div>
-      )}
     </>
   );
 };

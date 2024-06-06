@@ -21,7 +21,6 @@ function Header() {
           setIsAdmin(true);
         }
       } catch (err) {
-        // Если ошибка вызвана неавторизованным пользователем, игнорируем ее
         if (err.response && err.response.status === 401) {
           return;
         }
@@ -65,13 +64,13 @@ function Header() {
           <div className="panel-wrapper">
             <button onClick={togglePanel}><i className="user"><img src={profile} alt="profile" /></i></button>
             {isPanelOpen && (
-              <div className="panel">
+              <div className="panel-but">
                 {user === null && <button onClick={openLoginForm}>Вход</button>}
                 {user && (
                   <>
                     <Link to="/profile"><button>Профиль</button></Link>
-                    <button onClick={handleLogout}>Выход</button>
                     {isAdmin && <Link to="/admin"><button>Админ</button></Link>}
+                    <button onClick={handleLogout}>Выход</button>
                   </>
                 )}
               </div>

@@ -134,6 +134,7 @@ function AllProductsPage() {
                 <div className="product-details-all">
                   <div className="product-info-all">
                     <h2 className="product-name-all">{product.name}</h2>
+                    <h4 className="product-name-all">{product.description}</h4>
                   </div>
                   <button className="favorite-button-all">
                     <img src={likes} alt="Favorite" />

@@ -1,6 +1,6 @@
-// src/pages/CartPage.js
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import './CartPage.css';
@@ -25,49 +25,68 @@ const CartPage = () => {
   };
 
   const calculateTotalPrice = (items) => {
-    const total = items.reduce((sum, item) => sum + item.products.price * item.quantity, 0);
+    const total = items.reduce((sum, item) => {
+      const itemPrice = item.discount_percent ? item.products.price * (1 - item.discount_percent / 100) : item.products.price;
+      return sum + itemPrice * item.quantity;
+    }, 0);
     setTotalPrice(total);
   };
 
-  const handleRemoveItem = (id) => {
-    axios.delete(`http://localhost:3002/api/cart/${id}`, { withCredentials: true })
+  const handleRemoveItem = (productId) => {
+    axios.delete(`http://localhost:3002/api/cart/${productId}`, { withCredentials: true })
+      .then(response => {
+        const updatedItems = cartItems.filter(item => item.products.id !== productId);
+        setCartItems(updatedItems);
+        calculateTotalPrice(updatedItems);
+      })
+      .catch(error => {
+        console.error('Ошибка при удалении товара из корзины:', error);
+      });
+  };
+
+  const handleIncreaseQuantity = (productId) => {
+    const item = cartItems.find(item => item.products.id === productId);
+    axios.put(`http://localhost:3002/api/cart/${productId}`, { quantity: item.quantity + 1 }, { withCredentials: true })
+      .then(response => {
+        const updatedItems = cartItems.map(item => item.products.id === productId ? { ...item, quantity: item.quantity + 1 } : item);
+        setCartItems(updatedItems);
+        calculateTotalPrice(updatedItems);
+      })
+      .catch(error => {
+        console.error('Ошибка при увеличении количества товара:', error);
+      });
+  };
+
+  const handleDecreaseQuantity = (productId) => {
+    const item = cartItems.find(item => item.products.id === productId);
+    if (item.quantity > 1) {
+      axios.put(`http://localhost:3002/api/cart/${productId}`, { quantity: item.quantity - 1 }, { withCredentials: true })
         .then(response => {
-            const updatedItems = cartItems.filter(item => item.id !== id);
-            setCartItems(updatedItems);
-            calculateTotalPrice(updatedItems);
+          const updatedItems = cartItems.map(item => item.products.id === productId ? { ...item, quantity: item.quantity - 1 } : item);
+          setCartItems(updatedItems);
+          calculateTotalPrice(updatedItems);
         })
         .catch(error => {
-            console.error('Ошибка при удалении товара из корзины:', error);
+          console.error('Ошибка при уменьшении количества товара:', error);
         });
-};
+    }
+  };
 
-  const handleIncreaseQuantity = (id) => {
-    const item = cartItems.find(item => item.id === id);
-    axios.put(`http://localhost:3002/api/cart/${id}`, { quantity: item.quantity + 1 }, { withCredentials: true })
+  const handleQuantityChange = (productId, newQuantity) => {
+    const quantity = parseInt(newQuantity, 10);
+    if (quantity > 0) {
+      axios.put(`http://localhost:3002/api/cart/${productId}`, { quantity }, { withCredentials: true })
         .then(response => {
-            const updatedItems = cartItems.map(item => item.id === id ? { ...item, quantity: item.quantity + 1 } : item);
-            setCartItems(updatedItems);
-            calculateTotalPrice(updatedItems);
+          const updatedItems = cartItems.map(item => item.products.id === productId ? { ...item, quantity } : item);
+          setCartItems(updatedItems);
+          calculateTotalPrice(updatedItems);
         })
         .catch(error => {
-            console.error('Ошибка при увеличении количества товара:', error);
+          console.error('Ошибка при изменении количества товара:', error);
         });
-};
+    }
+  };
 
-const handleDecreaseQuantity = (id) => {
-  const item = cartItems.find(item => item.id === id);
-  if (item.quantity > 1) {
-      axios.put(`http://localhost:3002/api/cart/${id}`, { quantity: item.quantity - 1 }, { withCredentials: true })
-          .then(response => {
-              const updatedItems = cartItems.map(item => item.id === id ? { ...item, quantity: item.quantity - 1 } : item);
-              setCartItems(updatedItems);
-              calculateTotalPrice(updatedItems);
-          })
-          .catch(error => {
-              console.error('Ошибка при уменьшении количества товара:', error);
-          });
-  }
-};
   return (
     <>
       <Header />
@@ -79,17 +98,34 @@ const handleDecreaseQuantity = (id) => {
           <>
             <ul className="cart-items-list">
               {cartItems.map(item => (
-                <li key={item.id} className="cart-item">
-                  <img src={item.products.image} alt={item.products.name} className="cart-item-image" />
+                <li key={item.products.id} className="cart-item">
+                  <Link to={`/products/${item.products.id}`} className="cart-item-link">
+                    <img src={item.products.image} alt={item.products.name} className="cart-item-image" />
+                  </Link>
                   <div className="cart-item-details">
-                    <h2>{item.products.name}</h2>
-                    <p>Цена: {item.products.price} руб.</p>
+                    <Link to={`/products/${item.products.id}`} className="cart-item-link">
+                      <h2>{item.products.name}</h2>
+                    </Link>
+                    <p className="price-fav">
+                      {item.discount_percent ? (
+                        <>
+                          <span className="original-price-fav">{item.products.price} руб.</span>
+                          <span className="discounted-price-fav">{(item.products.price * (1 - item.discount_percent / 100)).toFixed(2)} руб.</span>
+                        </>
+                      ) : (
+                        `${item.products.price} руб.`
+                      )}
+                    </p>
                     <div className="quantity-controls">
-                      <button onClick={() => handleDecreaseQuantity(item.id)}>-</button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => handleIncreaseQuantity(item.id)}>+</button>
+                      <button onClick={() => handleDecreaseQuantity(item.products.id)}>-</button>
+                      <input 
+                        type="text" 
+                        value={item.quantity} 
+                        onChange={(e) => handleQuantityChange(item.products.id, e.target.value)} 
+                      />
+                      <button onClick={() => handleIncreaseQuantity(item.products.id)}>+</button>
+                      <button className="remove-button-cart" onClick={() => handleRemoveItem(item.products.id)}>Удалить</button>
                     </div>
-                    <button onClick={() => handleRemoveItem(item.id)}>Удалить</button>
                   </div>
                 </li>
               ))}

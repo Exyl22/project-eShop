@@ -21,8 +21,8 @@
     font-size: 16px;
     font-weight: bold;
     margin: 10px;
-    color: #333;
-    border-radius: 30px;
+    color: #fff;
+    border-radius: 10px;
     transition: background-color 0.3s ease, color 0.3s ease;
 }
 
@@ -128,3 +128,18 @@
 .load-more-button:hover {
     background-color: #2135a8;
 }
+
+.products-carousel .product-details .price {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .products-carousel .product-details .original-price {
+    text-decoration: line-through;
+    color: red;
+  }
+  
+  .products-carousel .product-details .discounted-price {
+    color: green;
+    font-weight: bold;
+  }

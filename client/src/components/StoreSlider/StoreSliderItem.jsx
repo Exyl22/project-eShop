@@ -10,12 +10,12 @@ const StoreSliderItem = ({ slider }) => {
   };
 
   return (
-    <div className="store-slider-item">
-      <img src={slider.product_image} alt={slider.name} />
-      <div className="text-overlay">
-        <h2 className="product-name">{slider.name}</h2>
-        <p className="product-description">{slider.description}</p>
-        <button className="product-button" onClick={handleClick}>Перейти</button>
+    <div className="store-slider-item-slider">
+      <img src={slider.image} alt={slider.name} />
+      <div className="text-overlay-slider">
+        <h2 className="product-name-slider">{slider.name}</h2>
+        <p className="product-description-slider">{slider.description}</p>
+        <button className="product-button-slider" onClick={handleClick}>Перейти</button>
       </div>
     </div>
   );

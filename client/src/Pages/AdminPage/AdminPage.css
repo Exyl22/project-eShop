@@ -1,120 +1,62 @@
+/* AdminPage.css */
 .admin-container {
-  margin: 20px;
+  padding: 20px;
 }
 
 .admin-container h1 {
-  font-size: 24px;
+  text-align: center;
   margin-bottom: 20px;
+}
+
+.add-button {
+  display: block;
+  margin: 0 auto 20px;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-button:hover {
+  background-color: #0056b3;
 }
 
 .admin-controls {
+  display: flex;
+  justify-content: left;
   margin-bottom: 20px;
 }
 
-.admin-controls input[type="text"], .admin-controls select {
-  margin-right: 10px;
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  font-size: 14px;
-}
-
-.admin-controls input[type="text"]::placeholder {
-  color: #999;
-}
-
-.admin-controls input[type="text"]:focus, .admin-controls select:focus {
-  outline: none;
-  border-color: #3061ca;
-}
-
+.admin-controls input,
 .admin-controls select {
-  appearance: none;
-}
-
-.admin-controls select::-ms-expand {
-  display: none;
+  margin-right: 10px;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
 }
 
 .admin-table {
   width: 100%;
   border-collapse: collapse;
-  border: 1px solid #ddd;
 }
 
-.admin-table thead {
-  background-color: #1e518b;
-}
-
-.admin-table th, .admin-table td {
+.admin-table th,
+.admin-table td {
   padding: 10px;
+  border: 1px solid #ccc;
   text-align: left;
-  border: 1px solid #ddd;
-}
-
-.admin-table th {
-  cursor: pointer;
 }
 
 .admin-actions button {
-  margin-right: 5px;
+  margin-right: 10px;
   padding: 5px 10px;
   border: none;
-  border-radius: 3px;
-  background-color: #3061ca;
-  color: #fff;
+  border-radius: 5px;
   cursor: pointer;
 }
 
 .admin-actions button:hover {
-  background-color: #204497;
-}
-
-.add-button {
-  margin-bottom: 20px;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 3px;
-  background-color: #28a745;
-  color: #fff;
-  cursor: pointer;
-}
-
-.add-button:hover {
-  background-color: #218838;
-}
-
-.modal {
-  position: fixed;
-  z-index: 999;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  overflow: auto;
-  background-color: rgba(0,0,0,0.4);
-}
-
-.modal-contentt {
-  background-color: #222;
-  margin: 10% auto;
-  padding: 20px;
-  border: 1px solid #888;
-  width: 80%;
-  max-width: 500px;
-  border-radius: 5px;
-}
-
-.close {
-  color: #aaa;
-  float: right;
-  font-size: 28px;
-  font-weight: bold;
-}
-
-.close:hover,
-.close:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
+  background-color: #f1f1f1;
 }
