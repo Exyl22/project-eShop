@@ -281,8 +281,6 @@ const checkRole = (roleName) => {
         const { data: products, error: productsError } = await query;
 
         if (productsError) throw productsError;
-
-        // Get discount data
         const productIds = products.map(product => product.id);
         const { data: discounts, error: discountsError } = await supabase
             .from('discounts')
