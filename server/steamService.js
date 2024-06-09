@@ -1,9 +1,10 @@
+// steamService.js
 import axios from 'axios';
 
 export const getSteamGameDetails = async (appId) => {
     try {
         const response = await axios.get(`https://store.steampowered.com/api/appdetails?appids=${appId}&cc=EU&l=russian`);
-        console.log('Steam API Response:', response.data); // Debugging information
+        console.log('Steam API Response:', response.data);
         if (response.data[appId].success) {
             const gameData = response.data[appId].data;
             const pcRequirements = {
@@ -21,11 +22,11 @@ export const getSteamGameDetails = async (appId) => {
 
             return { ...steamDetails, pc_requirements: pcRequirements };
         } else {
-            console.error('Steam API response indicates failure for appId:', appId); // Debugging information
+            console.error('Steam API response indicates failure for appId:', appId); 
             return null;
         }
     } catch (error) {
-        console.error('Error fetching game details from Steam:', error); // Debugging information
+        console.error('Error fetching game details from Steam:', error);
         return null;
     }
 };

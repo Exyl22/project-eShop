@@ -36,17 +36,17 @@ function Header() {
   };
 
   const openLoginForm = () => {
-    setIsPanelOpen(false); // Закрываем панель
-    navigate('/login'); // Переходим на страницу входа
+    setIsPanelOpen(false);
+    navigate('/login');
   };
 
   const handleLogout = async () => {
     try {
-      await axios.post('http://localhost:3002/api/logout', {}, { withCredentials: true });
+      await axios.post('http://localhost:3002/api/auth/logout', {}, { withCredentials: true });
       setUser(null);
       setIsAdmin(false);
-      navigate('/store'); // Перенаправляем на страницу /store
-      window.location.reload(); // Обновляем страницу
+      navigate('/store');
+      window.location.reload();
     } catch (err) {
       console.log(err);
     }

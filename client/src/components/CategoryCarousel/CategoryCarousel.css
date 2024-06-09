@@ -24,7 +24,7 @@
   }
   
   .category {
-    background-color: #111;
+    background-color: #1c1c20;
     padding: 20px;
     border-radius: 8px;
     text-align: center;
@@ -32,7 +32,7 @@
   }
   
   .category:hover {
-    background-color: #333;
+    background-color: #0e0e0f;
   }
   
   .category img {

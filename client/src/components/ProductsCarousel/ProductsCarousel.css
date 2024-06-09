@@ -45,7 +45,7 @@
 .product-item {
     position: relative;
     border-radius: 5px;
-    background-color: #222;
+    background-color: #1c1c20;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     padding: 20px;
     cursor: pointer;

@@ -92,17 +92,17 @@ function AllProductsPage() {
   return (
     <>
       <Header />
-      <div className="all-products-container">
-        <div className="filter-container">
-          <div className="category-buttons">
+      <div className="all-products-container-all">
+        <div className="filter-container-all">
+          <div className="category-buttons-all">
             <button value="all-products" onClick={handleCategoryChange}>Все товары</button>
             <button value="recommended" onClick={handleCategoryChange}>Рекомендуемые</button>
             <button value="discounts" onClick={handleCategoryChange}>Скидки</button>
             <button value="new" onClick={handleCategoryChange}>Новинки</button>
           </div>
         </div>
-        <div className="main-content">
-          <div className="top-filters">
+        <div className="main-content-all">
+          <div className="top-filters-all">
             <input 
               type="text" 
               placeholder="Поиск товаров..." 
@@ -110,7 +110,7 @@ function AllProductsPage() {
               onChange={handleSearchChange} 
             />
             <select value={category} onChange={handleCategoryChange}>
-              <option value="all-products">Все товары</option>
+              <option value="all-products-all">Все товары</option>
               {categories.map(cat => (
                 <option key={cat.id} value={cat.name}>{cat.name}</option>
               ))}

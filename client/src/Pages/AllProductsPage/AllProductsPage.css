@@ -1,22 +1,22 @@
-.all-products-container {
+.all-products-container-all {
   display: flex;
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
 }
 
-.filter-container {
+.filter-container-all {
   flex: 1;
   max-width: 200px;
   margin-right: 20px;
 }
 
-.category-buttons {
+.category-buttons-all {
   display: flex;
   flex-direction: column;
 }
 
-.category-buttons button {
+.category-buttons-all button {
   margin-bottom: 10px;
   padding: 10px;
   border: none;
@@ -27,24 +27,24 @@
   transition: background-color 0.3s;
 }
 
-.category-buttons button:hover {
+.category-buttons-all button:hover {
   background-color: #0056b3;
 }
 
-.main-content {
+.main-content-all {
   flex: 3;
   display: flex;
   flex-direction: column;
 }
 
-.top-filters {
+.top-filters-all {
   display: flex;
   justify-content: end;
   margin-bottom: 20px;
 }
 
-.top-filters input[type="text"],
-.top-filters select {
+.top-filters-all input[type="text"],
+.top-filters-all select {
   margin-right: 10px;
   padding: 5px 10px;
   border: 1px solid #ccc;
@@ -52,21 +52,21 @@
   font-size: 14px;
 }
 
-.top-filters input[type="text"]::placeholder {
+.top-filters-all input[type="text"]::placeholder {
   color: #999;
 }
 
-.top-filters input[type="text"]:focus,
-.top-filters select:focus {
+.top-filters-all input[type="text"]:focus,
+.top-filters-all select:focus {
   outline: none;
   border-color: #3061ca;
 }
 
-.top-filters select {
+.top-filters-all select {
   appearance: none;
 }
 
-.top-filters select::-ms-expand {
+.top-filters-all select::-ms-expand {
   display: none;
 }
 

@@ -1,5 +1,3 @@
-// AdminPage.js
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AdminPage.css';
@@ -21,7 +19,7 @@ function AdminPage() {
   }, []);
 
   const fetchProducts = () => {
-    axios.get('http://localhost:3002/api/admin', { withCredentials: true }) 
+    axios.get('http://localhost:3002/api/products/admin', { withCredentials: true }) 
       .then(response => {
         setProducts(response.data); 
       })
@@ -86,7 +84,7 @@ function AdminPage() {
     <>
       <Header />
       <div className="admin-container">
-      <h1>Админка</h1>
+        <h1>Админка</h1>
         <div className="admin-controls">
           <input
             type="text"

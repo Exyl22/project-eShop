@@ -19,7 +19,7 @@ export const RegisterPage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const res = await axios.post('http://localhost:3002/api/register', { username, email, password }, { withCredentials: true });
+      const res = await axios.post('http://localhost:3002/api/auth/register', { username, email, password }, { withCredentials: true });
       if (res.data && res.data.message === 'Регистрация успешна') {
         navigate('/login');
       } else {

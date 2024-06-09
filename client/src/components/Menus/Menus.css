@@ -4,7 +4,7 @@
   justify-content: space-between;
   align-items: center;
   margin: 20px;
-  background-color: #222;
+  background-color: #262830;
   border-radius: 40px;
   padding: 10px 20px;
 }
@@ -19,11 +19,11 @@
 }
 
 .menus a:hover {
-  background-color: #333;
+  background-color: #1d1d21;
 }
 
 .menus a.active {
-  background-color: #555;
+  background-color: #1d1d21;
   color: #fff;
 }
 

@@ -1,22 +1,22 @@
 import React, { useState } from 'react';
-import './LoginPage.css';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import passwordicon from '../../Source/password.svg';
 import user from '../../Source/user.svg';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import './LoginPage.css';
 
-export const LoginPage = () => {
-  const [username, setUsername] = useState(""); // изменено на username
-  const [password, setPassword] = useState(""); 
+const LoginPage = () => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-        const res = await axios.post('http://localhost:3002/api/login', { username, password }, { withCredentials: true }); // изменено на username
+        const res = await axios.post('http://localhost:3002/api/auth/login', { username, password }, { withCredentials: true });
         if (res.data && res.data.message === 'Login successful') {
             navigate('/profile');
         } else {
@@ -46,7 +46,7 @@ export const LoginPage = () => {
               <img src={user} alt="Login" />
               <input 
                 type="text" 
-                placeholder='Username' // изменено на Username
+                placeholder='Username'
                 value={username} 
                 onChange={(e) => setUsername(e.target.value)} 
                 required 
