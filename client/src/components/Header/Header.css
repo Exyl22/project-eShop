@@ -14,7 +14,7 @@
   padding: 20px;
 }
 
-.logo {
+.logo-header {
   font-size: 24px;
   margin: 0px;
 }
@@ -35,14 +35,14 @@
   color: #ddd;
 }
 
-.actions {
+.actions-header {
   position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.actions button {
+.actions-header button {
   background-color: #222;
   border: none;
   cursor: pointer;
@@ -55,15 +55,15 @@
   transition: background-color 0.3s;
 }
 
-.actions button:hover {
-  background-color: #444;
+.actions-header button:hover {
+  background-color: #1b1b1b;
 }
 
-.actions button i {
+.actions-header button i {
   font-size: 20px;
 }
 
-.actions button img {
+.actions-header button img {
   width: 24px;
   height: 24px;
   object-fit: cover;
@@ -71,7 +71,7 @@
   margin: auto;
 }
 
-.panel-but {
+.panel-but-header {
   position: absolute;
   top: 100%;
   width: 130px;
@@ -84,9 +84,11 @@
   overflow: hidden;
 }
 
-.panel-but button {
+.panel-but-header button {
   display: block;
   width: 100%;
+  color: #ffffff;
+  font-size: 16px;
   padding: 10px;
   align-items: center;
   background-color: #222;
@@ -96,16 +98,16 @@
   transition: background-color 0.3s ease;
 }
 
-.panel-but button:last-child {
+.panel-but-header button:last-child {
   border-bottom: none;
 }
 
-.panel-but a {
+.panel-but-header a {
   text-decoration: none;
   color: inherit;
 }
 
-.panel-but a button {
+.panel-but-header a button {
   text-align: left;
   width: 100%;
   padding: 10px;

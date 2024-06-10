@@ -16,7 +16,7 @@
 }
 
 .product-info-container {
-  border: 1px solid;
+  border: 3px solid;
   border-radius: 20px;
   padding: 20px;
   display: flex;
@@ -43,7 +43,7 @@
 
 .product-price-button-container {
   display: flex;
-  justify-content: center; /* Center the container */
+  justify-content: center; 
   align-items: center;
   width: 100%;
   margin-bottom: 10px;
@@ -59,12 +59,12 @@
   font-weight: bold;
   margin-bottom: 10px;
   color: #ecf0f1;
-  text-align: center; /* Center the text */
+  text-align: center; 
 }
 
 .product-tags {
   margin: 10px 0;
-  text-align: center; /* Center the tags */
+  text-align: center;
 }
 
 .product-tag {
@@ -121,7 +121,7 @@
 .product-price {
   display: flex;
   align-items: center;
-  background: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+  background: rgba(0, 0, 0, 0.5); 
   padding: 10px;
   border-radius: 5px;
   margin-right: 10px;
@@ -214,14 +214,12 @@
 }
 
 .tab-content {
-  border: 1px solid #bdc3c7;
+  border: 3px solid #bdc3c7;
   background-color: #111;
   padding: 20px;
   border-radius: 8px;
-  align-items: center;
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
-  text-align: center; /* Center the content */
 }
 
 .center-content {

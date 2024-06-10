@@ -64,9 +64,26 @@
 }
 
 .product-tags-allC {
-  font-size: 16px;
-  color: #999;
   margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.product-tags-allC {
+  display: inline-block;
+  padding: 5px 10px;
+  background-color: #333;
+  border-radius: 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+
+.product-tags-allC:hover {
+  background-color: #555;
 }
 
 .product-description-allC {

@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import Slider from 'react-slick'; // Исправлено название компонента
+import Slider from 'react-slick';
 import axios from 'axios';
 import StoreSliderItem from './StoreSliderItem';
 import 'slick-carousel/slick/slick.css';
@@ -19,7 +19,7 @@ function StoreSlider() {
   const fetchSliders = async () => {
     try {
       const response = await axios.get('http://localhost:3002/api/sliders');
-      console.log('Loaded sliders:', response.data); // Проверка данных
+      console.log('Loaded sliders:', response.data);
       setSliders(response.data);
     } catch (error) {
       console.error('Ошибка при загрузке слайдов:', error);
@@ -36,7 +36,7 @@ function StoreSlider() {
   };
 
   return (
-    <div className="custom-slider-container">
+    <div className="custom-slider-container-main">
       <Slider
         dots={false}
         infinite={true}
@@ -55,11 +55,11 @@ function StoreSlider() {
           </div>
         ))}
       </Slider>
-      <div className="slide-switchers">
+      <div className="slide-switchers-main">
         {sliders.map((slider, index) => (
           <div
             key={index}
-            className={`slide-switcher ${currentSlide === index ? 'active' : ''}`}
+            className={`slide-switcher-main ${currentSlide === index ? 'active' : ''}`}
             onClick={() => sliderRef.current.slickGoTo(index)}
           />
         ))}

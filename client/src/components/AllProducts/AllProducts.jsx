@@ -15,6 +15,7 @@ const AllProducts = () => {
   const fetchProducts = () => {
     axios.get(`http://localhost:3002/api/products?limit=${visibleProducts}`)
       .then(response => {
+        console.log('Products fetched:', response.data); // Add this line for debugging
         setProductList(response.data);
       })
       .catch(error => {

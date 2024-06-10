@@ -8,6 +8,10 @@ import './CartPage.css';
 const CartPage = () => {
   const [cartItems, setCartItems] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCartItems();
@@ -21,6 +25,9 @@ const CartPage = () => {
       })
       .catch(error => {
         console.error('Ошибка при загрузке товаров корзины:', error);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -87,52 +94,117 @@ const CartPage = () => {
     }
   };
 
+  const handleCheckout = () => {
+    axios.post('http://localhost:3002/api/purchase', {}, { withCredentials: true })
+      .then(response => {
+        alert('Покупка успешно завершена');
+        setCartItems([]);
+        setTotalPrice(0);
+        navigate('/'); // Redirect to home page after successful purchase
+      })
+      .catch(error => {
+        console.error('Ошибка при оформлении покупки:', error);
+      });
+  };
+
+  const renderCartItems = () => {
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = cartItems.slice(indexOfFirstItem, indexOfLastItem);
+
+    return currentItems.map(item => (
+      <li key={item.products.id} className="cart-item">
+        <Link to={`/products/${item.products.id}`} className="cart-item-link">
+          <img src={item.products.image} alt={item.products.name} className="cart-item-image" />
+        </Link>
+        <div className="cart-item-details">
+          <Link to={`/products/${item.products.id}`} className="cart-item-link">
+            <h2>{item.products.name}</h2>
+          </Link>
+          <p className="price-fav">
+            {item.discount_percent ? (
+              <>
+                <span className="original-price-fav">{item.products.price} руб.</span>
+                <span className="discounted-price-fav">{(item.products.price * (1 - item.discount_percent / 100)).toFixed(2)} руб.</span>
+              </>
+            ) : (
+              `${item.products.price} руб.`
+            )}
+          </p>
+          <div className="quantity-controls">
+            <button onClick={() => handleDecreaseQuantity(item.products.id)}>-</button>
+            <input 
+              type="text" 
+              value={item.quantity} 
+              onChange={(e) => handleQuantityChange(item.products.id, e.target.value)} 
+            />
+            <button onClick={() => handleIncreaseQuantity(item.products.id)}>+</button>
+            <button className="remove-button-cart" onClick={() => handleRemoveItem(item.products.id)}>Удалить</button>
+          </div>
+        </div>
+      </li>
+    ));
+  };
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
+  const renderPageNumbers = () => {
+    const pageNumbers = [];
+    for (let i = 1; i <= Math.ceil(cartItems.length / itemsPerPage); i++) {
+      pageNumbers.push(i);
+    }
+
+    return pageNumbers.map(number => (
+      <button
+        key={number}
+        onClick={() => handlePageChange(number)}
+        className={`page-number ${currentPage === number ? 'active' : ''}`}
+      >
+        {number}
+      </button>
+    ));
+  };
+
+  if (loading) {
+    return (
+      <>
+        <Header />
+        <div className="cart-container">
+          <div className="message-block-cart">
+            <div className="loader">
+              <div className="dot"></div>
+              <div className="dot"></div>
+              <div className="dot"></div>
+            </div>
+          </div>
+        </div>
+        <Footer />
+      </>
+    );
+  }
+
   return (
     <>
       <Header />
       <div className="cart-container">
         <h1>Корзина</h1>
         {cartItems.length === 0 ? (
-          <p>Ваша корзина пуста</p>
+          <div className="message-block-cart">Ваша корзина пуста</div>
         ) : (
           <>
-            <ul className="cart-items-list">
-              {cartItems.map(item => (
-                <li key={item.products.id} className="cart-item">
-                  <Link to={`/products/${item.products.id}`} className="cart-item-link">
-                    <img src={item.products.image} alt={item.products.name} className="cart-item-image" />
-                  </Link>
-                  <div className="cart-item-details">
-                    <Link to={`/products/${item.products.id}`} className="cart-item-link">
-                      <h2>{item.products.name}</h2>
-                    </Link>
-                    <p className="price-fav">
-                      {item.discount_percent ? (
-                        <>
-                          <span className="original-price-fav">{item.products.price} руб.</span>
-                          <span className="discounted-price-fav">{(item.products.price * (1 - item.discount_percent / 100)).toFixed(2)} руб.</span>
-                        </>
-                      ) : (
-                        `${item.products.price} руб.`
-                      )}
-                    </p>
-                    <div className="quantity-controls">
-                      <button onClick={() => handleDecreaseQuantity(item.products.id)}>-</button>
-                      <input 
-                        type="text" 
-                        value={item.quantity} 
-                        onChange={(e) => handleQuantityChange(item.products.id, e.target.value)} 
-                      />
-                      <button onClick={() => handleIncreaseQuantity(item.products.id)}>+</button>
-                      <button className="remove-button-cart" onClick={() => handleRemoveItem(item.products.id)}>Удалить</button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
+            <div className="message-block-cart">
+              <ul className="cart-items-list">
+                {renderCartItems()}
+              </ul>
+              <div className="pagination">
+                {renderPageNumbers()}
+              </div>
+            </div>
             <div className="cart-total">
               <h2>Итого: {totalPrice} руб.</h2>
-              <button className="checkout-button">Оформить заказ</button>
+              <button className="checkout-button" onClick={handleCheckout}>Оформить заказ</button>
             </div>
           </>
         )}

@@ -65,14 +65,25 @@ function LibraryPage() {
   };
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="library-container-fav">
+        <div className="loading-message">
+          <div className="loader">
+            <div className="dot"></div>
+            <div className="dot"></div>
+            <div className="dot"></div>
+          </div>
+          <p>Загрузка...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div>
       <Header />
-      <div className='library-container-fav'>
-        <h1 className='favorite-h1-fav'>Избранные товары</h1>
+      <div className="library-container-fav">
+        <h1 className="favorite-h1-fav">Избранные товары</h1>
         {isAuthenticated ? (
           <div className="product-list-fav">
             {favoriteProducts.length > 0 ? (
@@ -94,11 +105,15 @@ function LibraryPage() {
                 </div>
               ))
             ) : (
-              <p>Тут пусто :(</p>
+              <div className="message-block">
+                <p>Тут пусто :(</p>
+              </div>
             )}
-          </div>  
+          </div>
         ) : (
-          <p>Пожалуйста, авторизуйтесь, чтобы увидеть избранные товары.</p>
+          <div className="message-block">
+            <p>Пожалуйста, авторизуйтесь, чтобы увидеть избранные товары.</p>
+          </div>
         )}
       </div>
       <Footer />

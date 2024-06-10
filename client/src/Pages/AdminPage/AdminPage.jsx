@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './AdminPage.css';
 import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';  // добавлен Footer для фиксации внизу
 import ProductModal from './ProductModal';
 import ConfirmationModal from './ConfirmationModal';
 
@@ -122,8 +123,8 @@ function AdminPage() {
                 <td>{product.description}</td>
                 <td>{product.price}</td>
                 <td className="admin-actions">
-                  <button onClick={() => handleEdit(product)}>Редактировать</button>
-                  <button onClick={() => handleDelete(product.id)}>Удалить</button>
+                  <button className="edit-button" onClick={() => handleEdit(product)}>Редактировать</button>
+                  <button className="delete-button" onClick={() => handleDelete(product.id)}>Удалить</button>
                 </td>
               </tr>
             ))}
@@ -143,6 +144,7 @@ function AdminPage() {
           onClose={handleConfirmationClose}
         />
       )}
+      <Footer />
     </>
   );
 }

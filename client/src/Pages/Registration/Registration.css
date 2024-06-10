@@ -1,102 +1,112 @@
-/* Добавьте этот CSS в ваш файл стилей, например, RegisterPage.css */
-.container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin: auto;
-    margin-top: 20px;
-    margin-bottom: 30px;
-    max-width: 600px;
-    background: #111;
-    padding-bottom: 30px;
-    border-radius: 20px;
-  }
-  
-  .text {
-    color: #1280e7a9;
-    font-size: 48px;
-    font-weight: 700;
-    align-self: flex-start;
-    margin-left: auto; 
-    margin-right: auto;  
-  }
-  
-  .underline {
-    width: 60px;
-    height: 6px;
-    background: #1280e7a9;
-    border-radius: 9px;
-    margin-top: 10px;
-    margin-bottom: 10px;
-    align-self: flex-start;
-    margin-left: auto; 
-    margin-right: auto; 
-  }
-  
-  .inputs {
-    margin-top: 55px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 25px;
-  }
-  
-  .input {
-    display: flex;
-    align-items: center;
-    width: 480px;
-    height: 80px;
-    background: #333;
-    border-radius: 6px;
-  }
-  .input.error {
-    border: 2px solid #ff4d4d;
+.register-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  max-width: 1200px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 40px;
+  border-radius: 20px;
 }
 
-  .input img {
-    width: 30px; 
-    height: 30px; 
-    margin: 0 20px; 
-  }
-  
-  .input input {
-    flex: 1;
-    height: 50px;
-    background: transparent;
-    border: none;
-    outline: none;
-    color: #fff;
-    font-size: 19px;
-  }
-  
-  .error-message {
-    margin-top: 10px;
-    color: #ff4d4d;
-    font-size: 16px;
-  }
-  
-  .submit-container {
-    display: flex;
-    gap: 30px;
-    padding: 50px;
-  }
-  
-  .submit {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 220px;
-    height: 59px;
-    color: #fff;
-    background: #1280e7a9;
-    border-radius: 10px;
-    font-size: 19px;
-    font-weight: 700;
-    cursor: pointer;
-    border-color: #fff;
-  }
-  
-  .submit.active{
-    background: #1280e7a9;
-    color: #fff;
-  }
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 600px;
+  padding: 20px;
+}
+
+.text {
+  color: #1280e7;
+  font-size: 36px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.underline {
+  width: 60px;
+  height: 6px;
+  background: #1280e7;
+  border-radius: 9px;
+  margin: 0 auto 20px;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+}
+
+.input {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 480px;
+  height: 60px;
+  background: #333;
+  border-radius: 6px;
+}
+
+.input img {
+  width: 30px;
+  height: 30px;
+  margin: 0 20px;
+}
+
+.input input {
+  flex: 1;
+  height: 40px;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-size: 19px;
+}
+
+.error-message {
+  color: #ff4d4d;
+  font-size: 16px;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.submit-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+
+.submit {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 220px;
+  height: 50px;
+  color: #fff;
+  background: #1280e7;
+  border-radius: 10px;
+  font-size: 19px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+
+.submit:hover {
+  background: #0e5aa7;
+}
+
+.image-container {
+  margin-right: 20px;
+}
+
+.auth-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
+}

@@ -1,8 +1,10 @@
-/* SupportPage.css */
 .support-container {
-  max-width: 800px;
-  margin: 0 auto;
+  max-width: 900px;
+  margin: 20px auto;
   padding: 20px;
+  background: rgba(17, 17, 17, 0.9);
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .faq {
@@ -12,57 +14,74 @@
 .faq h2 {
   text-align: center;
   margin-bottom: 20px;
-  font-size: 24px;
-  color: #fff; /* Белый цвет текста */
+  font-size: 28px;
+  color: #fff;
+  font-weight: bold;
 }
 
 .faq-item {
-  margin-bottom: 10px;
-  border: 1px solid #ddd;
+  margin-bottom: 15px;
+  border: 1px solid #444;
   border-radius: 5px;
   overflow: hidden;
+  transition: border-color 0.3s;
 }
 
 .question {
-  padding: 10px;
-  background-color: #111; /* Темно-серый фон */
+  padding: 15px 20px;
+  background-color: #222;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 18px;
-  color: #fff; /* Белый цвет текста */
+  font-size: 20px;
+  color: #fff;
   transition: background-color 0.3s;
 }
 
 .question:hover {
-  background-color: #444; /* Чуть светлее при наведении */
-}
-
-.answer {
-  max-height: 0;
-  opacity: 0;
-  padding: 0 10px;
-  background-color: #111; /* Темно-серый фон */
-  color: #fff; /* Белый цвет текста */
-  overflow: hidden;
-  transition: max-height 0.6s ease, opacity 0.6s ease, padding 0.6s ease;
-}
-
-.active + .answer {
-  max-height: 500px; /* Достаточно большое значение для всех ответов */
-  opacity: 1;
-  padding: 10px;
+  background-color: #333;
 }
 
 .question::after {
   content: '+';
-  font-size: 20px;
+  font-size: 24px;
   transition: transform 0.3s;
-  color: #fff; /* Белый цвет текста */
 }
 
 .question.active::after {
   content: '-';
   transform: rotate(180deg);
+}
+
+.answer {
+  max-height: 0;
+  opacity: 0;
+  padding: 0 20px;
+  font-size: 20px;
+  margin: 0 15px;
+  background-color: #111;
+  color: #fff;
+  overflow: hidden;
+  transition: max-height 0.6s ease, opacity 0.6s ease, padding 0.6s ease;
+}
+
+.answer.show {
+  max-height: 300px;
+  opacity: 1;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .faq h2 {
+    font-size: 24px;
+  }
+
+  .question {
+    font-size: 18px;
+  }
+
+  .answer {
+    font-size: 16px;
+  }
 }

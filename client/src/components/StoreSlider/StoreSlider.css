@@ -1,23 +1,64 @@
-.custom-slider-container {
+.custom-slider-container-main {
   position: relative;
   width: 100%;
-  max-width: 1200px; /* Ограничиваем максимальную ширину слайдера */
-  margin: 0 auto; /* Центрируем слайдер по горизонтали */
-  overflow: hidden; /* Добавляем, чтобы изображения не выходили за пределы контейнера */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Легкая тень для эффекта плавающего слайдера */
-  border-radius: 10px; /* Скругленные углы */
+  max-width: 1200px;
+  margin: 20px auto;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  background-color: #111; /* Dark background for the slider container */
 }
 
-.slide-switchers {
+.slick-slide-main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
+  transition: transform 0.5s ease-in-out;
+}
+
+.slick-slide-main img {
+  border-radius: 10px;
+  max-width: 100%;
+  height: auto;
+  transition: transform 0.3s ease-in-out;
+}
+
+.slick-slide-main img:hover {
+  transform: scale(1.05);
+}
+
+.slick-prev-main, .slick-next-main {
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background 0.3s;
+}
+
+.slick-prev-main:hover, .slick-next-main:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.slick-prev-main:before, .slick-next-main:before {
+  font-size: 20px;
+  color: #fff;
+}
+
+.slide-switchers-main {
   position: absolute;
-  bottom: 10px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   gap: 10px;
 }
 
-.slide-switcher {
+.slide-switcher-main {
   width: 12px;
   height: 12px;
   border-radius: 50%;
@@ -26,23 +67,20 @@
   transition: background-color 0.3s;
 }
 
-.slide-switcher.active {
+.slide-switcher-main.active {
   background-color: #717171;
 }
 
-.slick-prev, .slick-next {
-  z-index: 1;
-  background: rgba(0, 0, 0, 0.5);
-  border-radius: 50%;
-  width: 40px;
-  height: 40px;
+.slide-switcher-main:hover {
+  background-color: #555;
 }
 
-.slick-prev:hover, .slick-next:hover {
-  background: rgba(0, 0, 0, 0.8);
-}
+@media (max-width: 768px) {
+  .custom-slider-container-main {
+    padding: 0 10px;
+  }
 
-.slick-prev:before, .slick-next:before {
-  font-size: 20px;
-  color: #fff;
+  .slick-slide-main {
+    padding: 20px 0;
+  }
 }

@@ -100,24 +100,34 @@ const ProductsCarousel = () => {
             <Link to={`/products/${product.id}`} className="product-link">
               <img src={product.image} alt={product.name} />
               <h3>{product.name}</h3>
+              <div className="product-tags">
+                {product.steamDetails && product.steamDetails.tags && product.steamDetails.tags.map((tag, index) => (
+                  <span key={index} className="product-tag">{tag}</span>
+                ))}
+              </div>
             </Link>
             <div className="product-details">
-              <p className="price">
-                {product.discount_percent ? (
-                  <>
-                    <span className="original-price">{product.price} руб.</span>
-                    <span className="discounted-price">{(product.price * (1 - product.discount_percent / 100)).toFixed(2)} руб.</span>
-                  </>
-                ) : (
-                  `${product.price} руб.`
+              <div className="product-price-like">
+                {product.discount_percent && (
+                  <div className="discount-badge">-{product.discount_percent}%</div>
                 )}
-              </p>
-              <button 
-                className={`like-button ${favorites.includes(product.id) ? 'favorite' : ''}`} 
-                onClick={(event) => handleLikeClick(event, product.id)}
-              >
-                {favorites.includes(product.id) ? '-' : '+'}
-              </button>
+                <p className="price">
+                  {product.discount_percent ? (
+                    <>
+                      <span className="original-price">{product.price} руб.</span>
+                      <span className="discounted-price">{(product.price * (1 - product.discount_percent / 100)).toFixed(2)} руб.</span>
+                    </>
+                  ) : (
+                    `${product.price} руб.`
+                  )}
+                </p>
+                <button 
+                  className={`like-button ${favorites.includes(product.id) ? 'favorite' : ''}`} 
+                  onClick={(event) => handleLikeClick(event, product.id)}
+                >
+                  {favorites.includes(product.id) ? '❤️' : '🤍'}
+                </button>
+              </div>
             </div>
           </div>
         ))}

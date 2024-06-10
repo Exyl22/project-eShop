@@ -9,6 +9,7 @@ import favoritesRouter from './routes/favoritesRoutes.mjs';
 import cartRouter from './routes/cartRoutes.mjs';
 import slidersRouter from './routes/slidersRoutes.mjs';
 import categoriesRouter from './routes/categoriesRoutes.mjs';
+import purchaseRoutes from './routes/purchaseRoutes.mjs';
 
 const app = express();
 app.use(express.json());
@@ -37,6 +38,7 @@ app.use('/api/favorites', favoritesRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/sliders', slidersRouter);
 app.use('/api/categories', categoriesRouter);
+app.use('/api/purchase', purchaseRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

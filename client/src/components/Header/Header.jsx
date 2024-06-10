@@ -55,16 +55,16 @@ function Header() {
   return (
     <header className="header">
       <div className="header-content">
-        <div className="logo">ProjectS</div>
+        <div className="logo-header">ProjectS</div>
         <div className='menuHead'>
           <Menus />
         </div>
-        <div className="actions">
+        <div className="actions-header">
           <button onClick={() => navigate('/cart')}><i className="cart"><img src={cart} alt="cart" /></i></button>
-          <div className="panel-wrapper">
+          <div className="panel-wrapper-header">
             <button onClick={togglePanel}><i className="user"><img src={profile} alt="profile" /></i></button>
             {isPanelOpen && (
-              <div className="panel-but">
+              <div className="panel-but-header">
                 {user === null && <button onClick={openLoginForm}>Вход</button>}
                 {user && (
                   <>

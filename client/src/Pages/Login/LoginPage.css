@@ -1,19 +1,31 @@
-.container {
-  position: relative;
-  margin: 20px auto;
-  padding: 0 20px;
+.login-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin: auto;
+  margin-top: 20px;
+  margin-bottom: 30px;
+  max-width: 1200px;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 40px;
   border-radius: 20px;
-  max-width: 480px; /* Уменьшил максимальную ширину контейнера */
-  height: auto; /* Изменил высоту на авто */
-  overflow: hidden;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 600px;
+  padding: 20px;
 }
 
 .text {
-  color: #1280e7; /* Исправил цвет текста */
-  font-size: 24px; /* Уменьшил размер текста */
+  color: #1280e7;
+  font-size: 36px;
   font-weight: 700;
-  text-align: center; /* Добавил выравнивание по центру */
-  margin-bottom: 20px; /* Добавил отступ снизу */
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .underline {
@@ -21,9 +33,7 @@
   height: 6px;
   background: #1280e7;
   border-radius: 9px;
-  margin-top: 10px;
-  margin-bottom: 30px; /* Увеличил отступ снизу */
-  align-self: center; /* Центрировал подчеркивание */
+  margin: 0 auto 20px;
 }
 
 .inputs {
@@ -36,9 +46,9 @@
 .input {
   display: flex;
   align-items: center;
-  width: 100%; /* Изменил ширину на 100% */
-  max-width: 480px; /* Добавил максимальную ширину */
-  height: 80px;
+  width: 100%;
+  max-width: 480px;
+  height: 60px;
   background: #333;
   border-radius: 6px;
 }
@@ -51,7 +61,7 @@
 
 .input input {
   flex: 1;
-  height: 50px;
+  height: 40px;
   background: transparent;
   border: none;
   outline: none;
@@ -62,13 +72,14 @@
 .error-message {
   color: #ff4d4d;
   font-size: 16px;
-  text-align: center; /* Выравнивание по центру */
+  text-align: center;
+  margin-top: 20px;
 }
 
 .submit-container {
   display: flex;
-  justify-content: center; /* Выравнивание по центру */
-  margin-top: 30px; /* Добавил отступ сверху */
+  justify-content: center;
+  margin-top: 30px;
 }
 
 .submit {
@@ -76,17 +87,17 @@
   justify-content: center;
   align-items: center;
   width: 220px;
-  height: 59px;
+  height: 50px;
   color: #fff;
-  background: #1280e7; /* Исправил цвет кнопки */
+  background: #1280e7;
   border-radius: 10px;
   font-size: 19px;
   font-weight: 700;
   cursor: pointer;
-  border: none; /* Убрал границу */
+  border: none;
 }
 
-.submit:hover { /* Добавил стили при наведении */
+.submit:hover {
   background: #0e5aa7;
 }
 
@@ -98,7 +109,21 @@
 }
 
 .register-link {
-  color: #1280e7a9;
+  color: #1280e7;
   cursor: pointer;
   transition: color 0.3s ease;
+}
+
+.register-link:hover {
+  color: #0e5aa7;
+}
+
+.image-container {
+  margin-left: 20px;
+}
+
+.auth-image {
+  max-width: 100%;
+  height: auto;
+  border-radius: 10px;
 }

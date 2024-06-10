@@ -152,15 +152,23 @@ productRouter.get('/recommended', async (req, res) => {
   
       if (discountsError) throw discountsError;
   
-      const productsWithDiscounts = products.map(product => {
+      const productsWithDiscountsAndSteamDetails = await Promise.all(products.map(async product => {
         const discount = discounts.find(discount => discount.product_id === product.id);
-        return {
-          ...product,
-          discount_percent: discount ? discount.discount_percent : null
-        };
-      });
+        product.discount_percent = discount ? discount.discount_percent : null;
+        
+        if (product.steamappid) {
+          const steamDetails = await getSteamGameDetails(product.steamappid);
+          if (steamDetails) {
+            product.steamDetails = steamDetails;
+          }
+        }
   
-      res.json(productsWithDiscounts);
+        return product;
+      }));
+  
+      console.log('Products with Steam details:', productsWithDiscountsAndSteamDetails); 
+  
+      res.json(productsWithDiscountsAndSteamDetails);
     } catch (error) {
       console.error('Ошибка при получении данных о товарах:', error);
       res.status(500).json({ error: 'Ошибка на сервере' });
@@ -197,13 +205,14 @@ productRouter.get('/recommended', async (req, res) => {
         }
       }
   
+      console.log('Product data with Steam details:', product); // Debugging
+  
       res.json(product);
     } catch (error) {
       console.error('Ошибка при получении данных о продукте:', error);
       res.status(500).json({ error: 'Ошибка на сервере' });
     }
   });
-
   
   productRouter.post('/', isAuthenticated, checkRole('admin'), async (req, res) => {
     const { name, description, price } = req.body;
