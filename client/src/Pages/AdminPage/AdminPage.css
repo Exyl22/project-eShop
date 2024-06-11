@@ -1,4 +1,3 @@
-/* AdminPage.css */
 .admin-container {
   flex: 1;
   display: flex;
@@ -6,32 +5,19 @@
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  background-color: #1f1f1f; /* Dark background */
+  color: #fff; /* White text */
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .admin-container h1 {
-  text-align: center;
   margin-bottom: 20px;
-}
-
-.add-button {
-  display: block;
-  margin: 0 auto 20px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.add-button:hover {
-  background-color: #0056b3;
+  color: #ffdf00; /* Yellow color for heading */
 }
 
 .admin-controls {
   display: flex;
-  justify-content: left;
   margin-bottom: 20px;
 }
 
@@ -41,40 +27,95 @@
   padding: 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  background-color: #333; /* Dark input background */
+  color: #fff; /* White input text */
 }
 
-.admin-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-.admin-table th,
-.admin-table td {
-  padding: 10px;
-  border: 1px solid #ccc;
-  text-align: left;
-}
-
-.admin-actions button {
-  margin-right: 10px;
-  padding: 5px 10px;
+.add-button {
+  padding: 10px 20px;
+  background-color: #ffdf00; /* Yellow color */
+  color: #1f1f1f; /* Dark text color */
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
 
-.admin-actions .edit-button:hover {
-  background-color: #007bff;
-  color: white;
+.add-button:hover {
+  background-color: #e5c700; /* Darker yellow on hover */
 }
 
-.admin-actions .delete-button:hover {
-  background-color: #dc3545;
-  color: white;
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #333; /* Dark table background */
+  border-radius: 5px;
+  overflow: hidden;
 }
 
-/* Ensure footer sticks to the bottom */
+.admin-table th,
+.admin-table td {
+  padding: 10px;
+  border: 1px solid #444; /* Darker borders */
+  text-align: left;
+}
+
+.admin-table th {
+  background-color: #444; /* Darker table header */
+}
+
+.pagination-admin {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.page-button-admin {
+  margin: 0 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  background-color: #444;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.page-button-admin.active {
+  background-color: #ffdf00;
+  color: #1f1f1f;
+}
+
+.page-button-admin:hover:not(.active) {
+  background-color: #555;
+}
+
+.context-menu {
+  position: absolute;
+  z-index: 1000;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  padding: 10px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  min-width: 150px;
+}
+
+.context-menu button {
+  background: none;
+  border: none;
+  text-align: left;
+  padding: 10px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.context-menu button:hover {
+  background-color: #f1f1f1;
+}
+
 html, body {
   height: 100%;
   margin: 0;

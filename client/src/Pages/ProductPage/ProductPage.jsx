@@ -96,7 +96,7 @@ const ProductPage = () => {
         return <div className="loading">Product not found</div>;
     }
 
-    const visibleImages = showMore ? steamDetails.images : steamDetails.images.slice(0, 3);
+    const visibleImages = Array.isArray(steamDetails.images) ? (showMore ? steamDetails.images : steamDetails.images.slice(0, 3)) : [];
 
     return (
         <>
@@ -106,9 +106,9 @@ const ProductPage = () => {
                 <div className="product-info-container">
                     <div className="main-image-container">
                         <div className="product-name">{product.name}</div>
-                        <img className="main-image" src={steamDetails.headerImage} alt="Header" />
+                        <img className="main-image" src={steamDetails.header_image} alt="Header" />
                         <div className="product-tags">
-                            {steamDetails.tags.map((tag, index) => (
+                            {Array.isArray(steamDetails.tags) && steamDetails.tags.map((tag, index) => (
                                 <span key={index} className="product-tag">{tag}</span>
                             ))}
                         </div>
@@ -124,8 +124,8 @@ const ProductPage = () => {
                                 )}
                             </div>
                             <button className="add-to-cart" onClick={handleAddToCart}>В корзину</button>
-                            <button className="add-to-favorites" onClick={handleAddToFavorites}>
-                                <i className="fas fa-heart"></i>
+                            <button className="add-to-favorites">
+                                <i className="fas fa-heart" onClick={handleAddToFavorites}></i>
                             </button>
                         </div>
                     </div>
@@ -136,7 +136,7 @@ const ProductPage = () => {
                                     <img className="additional-image-info" src={image} alt={`Screenshot ${index + 1}`} onClick={() => setModalImageIndex(index)} />
                                 </div>
                             ))}
-                            {steamDetails.images.length > 3 && (
+                            {Array.isArray(steamDetails.images) && steamDetails.images.length > 3 && (
                                 <button className="show-more-button" onClick={() => setShowMore(!showMore)}>
                                     {showMore ? 'Показать меньше' : 'Показать больше'}
                                 </button>

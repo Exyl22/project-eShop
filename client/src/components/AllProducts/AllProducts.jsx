@@ -35,7 +35,7 @@ const AllProducts = () => {
               <div className="product-info-allC">
                 <div className="product-name-allC">{product.name}</div>
                 <div className="product-tags-allC">
-                  {product.steamDetails && product.steamDetails.tags && product.steamDetails.tags.join(', ')}
+                  {product.steamDetails && Array.isArray(product.steamDetails.tags) ? product.steamDetails.tags.join(', ') : product.steamDetails.tags}
                 </div>
                 <div className="product-description-allC">{product.description}</div>
               </div>

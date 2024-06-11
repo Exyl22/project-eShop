@@ -1,5 +1,5 @@
 /* ConfirmationModal.css */
-.modal-overlayy {
+.modal-overlay-adm {
     position: fixed;
     top: 0;
     left: 0;
@@ -12,7 +12,7 @@
     z-index: 1000;
   }
   
-  .modal-contentt {
+  .modal-content-adm {
     background: #444;
     padding: 20px;
     border-radius: 8px;
@@ -20,17 +20,17 @@
     max-width: 90%;
   }
   
-  .modal-contentt h2 {
+  .modal-content-adm h2 {
     margin-top: 0;
   }
   
-  .modal-actionss {
+  .modal-actions-adm {
     display: flex;
     justify-content: flex-end;
     margin-top: 20px;
   }
   
-  .modal-actionss button {
+  .modal-actions-adm button {
     margin-left: 10px;
   }
   

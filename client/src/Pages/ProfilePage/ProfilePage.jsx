@@ -17,6 +17,12 @@ const ProfilePage = () => {
   const [purchasedProducts, setPurchasedProducts] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [activeTab, setActiveTab] = useState('purchased');
+  const [purchasedPage, setPurchasedPage] = useState(1);
+  const [transactionPage, setTransactionPage] = useState(1);
+  const [totalPurchasedPages, setTotalPurchasedPages] = useState(1);
+  const [totalTransactionPages, setTotalTransactionPages] = useState(1);
+
+  const ITEMS_PER_PAGE = 5;
 
   useEffect(() => {
     axios.get('http://localhost:3002/api/profile', { withCredentials: true })
@@ -39,24 +45,26 @@ const ProfilePage = () => {
         console.log(err);
       });
 
-    fetchPurchasedProducts();
-    fetchTransactions();
-  }, []);
+    fetchPurchasedProducts(purchasedPage);
+    fetchTransactions(transactionPage);
+  }, [purchasedPage, transactionPage]);
 
-  const fetchPurchasedProducts = () => {
-    axios.get('http://localhost:3002/api/profile/purchased', { withCredentials: true })
+  const fetchPurchasedProducts = (page) => {
+    axios.get(`http://localhost:3002/api/profile/purchased?page=${page}&limit=${ITEMS_PER_PAGE}`, { withCredentials: true })
       .then(res => {
-        setPurchasedProducts(res.data);
+        setPurchasedProducts(res.data.products);
+        setTotalPurchasedPages(res.data.totalPages);
       })
       .catch(err => {
         console.log(err);
       });
   };
 
-  const fetchTransactions = () => {
-    axios.get('http://localhost:3002/api/profile/transactions', { withCredentials: true })
+  const fetchTransactions = (page) => {
+    axios.get(`http://localhost:3002/api/profile/transactions?page=${page}&limit=${ITEMS_PER_PAGE}`, { withCredentials: true })
       .then(res => {
-        setTransactions(res.data);
+        setTransactions(res.data.transactions);
+        setTotalTransactionPages(res.data.totalPages);
       })
       .catch(err => {
         console.log(err);
@@ -108,41 +116,67 @@ const ProfilePage = () => {
     setAvatar(e.target.files[0]);
   };
 
+  const renderPurchasedProducts = () => (
+    <div className="purchased-products-profile">
+      <h3>Купленные товары</h3>
+      {purchasedProducts && purchasedProducts.length > 0 ? (
+        purchasedProducts.map(product => (
+          <div key={product.id} className="purchased-product-profile">
+            <h4>{product.name}</h4>
+            <p>Дата покупки: {new Date(product.purchase_date).toLocaleDateString()}</p>
+            <p>Ключ: {product.key}</p>
+          </div>
+        ))
+      ) : (
+        <p>Вы еще не купили ни одного товара.</p>
+      )}
+      <div className="pagination">
+        {Array.from({ length: totalPurchasedPages }, (_, index) => (
+          <button
+            key={index}
+            className={`page-button-profile ${purchasedPage === index + 1 ? 'active' : ''}`}
+            onClick={() => setPurchasedPage(index + 1)}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderTransactions = () => (
+    <div className="transactions-profile">
+      <h3>Транзакции</h3>
+      {transactions && transactions.length > 0 ? (
+        transactions.map(transaction => (
+          <div key={transaction.id} className="transaction-profile">
+            <h4>{transaction.name}</h4>
+            <p>Дата транзакции: {new Date(transaction.transaction_date).toLocaleDateString()}</p>
+            <p>Сумма: {transaction.amount} руб.</p>
+          </div>
+        ))
+      ) : (
+        <p>У вас нет транзакций.</p>
+      )}
+      <div className="pagination-profile">
+        {Array.from({ length: totalTransactionPages }, (_, index) => (
+          <button
+            key={index}
+            className={`page-button-profile ${transactionPage === index + 1 ? 'active' : ''}`}
+            onClick={() => setTransactionPage(index + 1)}
+          >
+            {index + 1}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
   const renderContent = () => {
     if (activeTab === 'purchased') {
-      return (
-        <div className="purchased-products">
-          <h3>Купленные товары</h3>
-          {purchasedProducts.length > 0 ? (
-            purchasedProducts.map(product => (
-              <div key={product.id} className="purchased-product">
-                <h4>{product.name}</h4>
-                <p>Дата покупки: {new Date(product.purchase_date).toLocaleDateString()}</p>
-                <p>Ключ: {product.key}</p>
-              </div>
-            ))
-          ) : (
-            <p>Вы еще не купили ни одного товара.</p>
-          )}
-        </div>
-      );
+      return renderPurchasedProducts();
     } else if (activeTab === 'transactions') {
-      return (
-        <div className="transactions">
-          <h3>Транзакции</h3>
-          {transactions.length > 0 ? (
-            transactions.map(transaction => (
-              <div key={transaction.id} className="transaction">
-                <h4>{transaction.name}</h4>
-                <p>Дата транзакции: {new Date(transaction.transaction_date).toLocaleDateString()}</p>
-                <p>Сумма: {transaction.amount} руб.</p>
-              </div>
-            ))
-          ) : (
-            <p>У вас нет транзакций.</p>
-          )}
-        </div>
-      );
+      return renderTransactions();
     }
     return null;
   };
@@ -157,19 +191,19 @@ const ProfilePage = () => {
               <div className="user-details">
                 <h2>{user.username}</h2>
                 <p>Избранные игры: {favoritesCount}</p>
-                <p className="description">{user.description || 'Описание пользователя...'}</p>
+                <p className="description-profile">{user.description || 'Описание пользователя...'}</p>
               </div>
-              <div className="avatar-edit">
+              <div className="avatar-edit-profile">
                 <img src={user.avatar || 'default-avatar.png'} alt="Avatar" className="avatar" />
-                <button className="edit-button" onClick={() => setEditMode(true)}>Редактировать</button>
+                <button className="edit-button-profile" onClick={() => setEditMode(true)}>Редактировать</button>
               </div>
             </>
           )}
           {editMode && (
-            <div className="modal">
-              <div className="modal-content">
-                <span className="close" onClick={() => setEditMode(false)}>&times;</span>
-                <div className="edit-form">
+            <div className="modal-profile">
+              <div className="modal-content-profile">
+                <span className="close-profile" onClick={() => setEditMode(false)}>&times;</span>
+                <div className="edit-form-profile">
                   <label>Email:</label>
                   <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
                   <label>Текущий пароль:</label>
@@ -186,9 +220,9 @@ const ProfilePage = () => {
             </div>
           )}
           {notification.message && (
-            <div className={`notification-modal ${notification.type}`}>
-              <div className="notification-content">
-                <span className="close" onClick={() => setNotification({ message: '', type: '' })}>&times;</span>
+            <div className={`notification-modal-profile ${notification.type}`}>
+              <div className="notification-content-profile">
+                <span className="close-profile" onClick={() => setNotification({ message: '', type: '' })}>&times;</span>
                 <p>{notification.message}</p>
               </div>
             </div>

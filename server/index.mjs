@@ -10,6 +10,7 @@ import cartRouter from './routes/cartRoutes.mjs';
 import slidersRouter from './routes/slidersRoutes.mjs';
 import categoriesRouter from './routes/categoriesRoutes.mjs';
 import purchaseRoutes from './routes/purchaseRoutes.mjs';
+import adminRouter from './routes/adminRouter.mjs';
 
 const app = express();
 app.use(express.json());
@@ -23,10 +24,10 @@ app.use(cors({
 app.use(session({
   secret: 'your_secret_key',
   resave: false,
-  saveUninitialized: false, // Изменено с true на false
+  saveUninitialized: false,
   cookie: {
-    secure: false, // Установите true для HTTPS
-    httpOnly: true, // Гарантирует, что cookie будут доступны только серверу
+    secure: false, 
+    httpOnly: true, 
     maxAge: 1000 * 60 * 60 * 24 // 24 часа
   }
 }));
@@ -39,6 +40,7 @@ app.use('/api/cart', cartRouter);
 app.use('/api/sliders', slidersRouter);
 app.use('/api/categories', categoriesRouter);
 app.use('/api/purchase', purchaseRoutes);
+app.use('/api/admin', adminRouter);
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
