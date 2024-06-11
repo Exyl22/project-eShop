@@ -14,7 +14,7 @@ import adminRouter from './routes/adminRouter.mjs';
 
 const app = express();
 app.use(express.json());
-const PORT = 3002;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors({
   origin: 'http://localhost:3000',
