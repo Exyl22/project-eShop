@@ -5,9 +5,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "nodemon index.mjs",
-    "build": "tsc"
-    },
+    "start": "nodemon index.mjs"
+  },
   "author": "",
   "license": "ISC",
   "dependencies": {
